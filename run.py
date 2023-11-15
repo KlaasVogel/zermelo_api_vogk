@@ -1,7 +1,7 @@
-from zermelo_api import ZermeloAPI
+from zermelo_api import Branches
 
-testZermelo = ZermeloAPI()
+branches = Branches(2023)
+print(branches)
 
-with open("cred.ini") as f:
-    token = f.read()
-    print(testZermelo.add_token(token))
+for branch in branches:
+    print(branch)
