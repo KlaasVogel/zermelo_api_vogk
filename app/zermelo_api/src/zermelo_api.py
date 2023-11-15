@@ -1,9 +1,10 @@
 from .credentials import Credentials
-from .logger import makeLogger
+from .logger import makeLogger, DEBUG
 import json
 import requests
+from traceback import format_exc
 
-logger = makeLogger("ZermeloAPI")
+logger = makeLogger("ZermeloAPI", DEBUG)
 
 ZERMELO_NAME = "carmelhengelo"
 
@@ -12,8 +13,6 @@ class ZermeloAPI:
     def __init__(self, school=ZERMELO_NAME):
         self.credentials = Credentials()
         self.zerurl = f"https://{school}.zportal.nl/api/v3/"
-        self.starttijd = 0
-        self.eindtijd = 1
 
     def login(self, code: str) -> bool:
         token = self.get_access_token(code)
@@ -44,21 +43,16 @@ class ZermeloAPI:
             self.getName()
             result = True
         except Exception as e:
-            logger.trace()
+            logger.error(format_exc())
             logger.error(e)
         finally:
             return result
 
-    def setTimes(self, start, end):
-        logger.debug(f"start: {start}, end: {end}")
-        self.starttijd = start
-        self.eindtijd = end
-
     def getName(self):
         if not self.credentials.token:
             raise Exception("No Token loaded!")
-        data = self.getData("users/~me", False)
-        if not len(data):
+        status, data = self.getData("users/~me", False)
+        if status != 200 or not len(data):
             raise Exception("could not load user data with token")
         logger.debug(f"get name: {data[0]}")
         row = data[0]
@@ -67,9 +61,8 @@ class ZermeloAPI:
         else:
             return " ".join([row["firstName"], row["prefix"], row["lastName"]])
 
-    def getData(self, task, with_id=True) -> list[dict]:
-        # logger.debug("getting data from Zermelo:")
-        data = {}
+    def getData(self, task, with_id=True) -> tuple[int, list[dict]]:
+        result = (500, [])
         try:
             request = (
                 self.zerurl + task + f"&access_token={self.credentials.token}"
@@ -79,16 +72,18 @@ class ZermeloAPI:
             logger.debug(request)
             json_response = requests.get(request).json()
             if json_response:
-                if json_response["response"]["status"] == 200:
-                    data = json_response["response"]["data"]
+                json_status = json_response["response"]["status"]
+                if json_status == 200:
+                    result = (200, json_response["response"]["data"])
+                    logger.debug("    **** JSON OK ****")
                 else:
                     logger.debug(
-                        f"oeps, geen juiste response: {task}: {json_response['response']['status']} - {json_response['response']['details']}"
+                        f"oeps, geen juiste response: {task}: {json_response['response']}"
                     )
+                    result = (json_status, [])
             else:
                 logger.error("JSON - response is leeg")
         except Exception as e:
-            logger.trace()
-            logger.error(e)
+            logger.error(format_exc())
         finally:
-            return data
+            return result

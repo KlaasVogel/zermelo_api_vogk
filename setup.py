@@ -1,17 +1,17 @@
 from setuptools import find_packages, setup
 
-with open("app/README.md", "r") as f:
+with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
     name="zermelo_api_vogk",
-    version="0.0.06",
+    version="0.0.7",
     description="A Module to create a Zermelo access token and put data from Zermelo in dataclasses",
     package_dir={"": "app"},
     packages=find_packages(where="app"),
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://https://github.com/KlaasVogel/zermelo_api_vogk",
+    url="https://github.com/KlaasVogel/zermelo_api_vogk",
     author="KlaasVogel",
     author_email="klaas@klaasvogel.nl",
     license="MIT",

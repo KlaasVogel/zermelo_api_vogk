@@ -7,7 +7,6 @@ logger = makeLogger("creds", INFO)
 class Credentials:
     def __init__(self):
         self.file = getConfig("creds")
-        print(self.file)
         self.token = ""
         self.load()
 
