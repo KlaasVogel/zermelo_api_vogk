@@ -1,6 +1,5 @@
 from ..zermelo_api import ZermeloAPI
 from ..logger import makeLogger
-from traceback import format_exc
 from dataclasses import dataclass, InitVar
 import inspect
 
@@ -11,7 +10,7 @@ zermelo = ZermeloAPI()
 if not zermelo.checkCreds():
     with open("creds.ini") as f:
         token = f.read()
-        print(zermelo.add_token(token))
+        zermelo.add_token(token)
 
 
 def from_zermelo_dict(cls):
@@ -39,8 +38,8 @@ class Zermelo:
             if not data:
                 logger.warning("no data")
         except Exception as e:
-            logger.error(format_exc())
-            logger.error(e)
+            # logger.trace()
+            logger.debug(e)
             data = []
         return data
 

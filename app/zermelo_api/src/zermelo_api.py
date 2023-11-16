@@ -1,10 +1,9 @@
 from .credentials import Credentials
-from .logger import makeLogger, DEBUG
+from .logger import makeLogger, DEBUG, INFO
 import json
 import requests
-from traceback import format_exc
 
-logger = makeLogger("ZermeloAPI", DEBUG)
+logger = makeLogger("ZermeloAPI", INFO)
 
 ZERMELO_NAME = "carmelhengelo"
 
@@ -43,7 +42,7 @@ class ZermeloAPI:
             self.getName()
             result = True
         except Exception as e:
-            logger.error(format_exc())
+            logger.trace()
             logger.error(e)
         finally:
             return result
@@ -84,6 +83,6 @@ class ZermeloAPI:
             else:
                 logger.error("JSON - response is leeg")
         except Exception as e:
-            logger.error(format_exc())
+            logger.trace()
         finally:
             return result
