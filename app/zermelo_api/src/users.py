@@ -1,5 +1,5 @@
-from ..zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
-from ..logger import makeLogger
+from .zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
+from .logger import makeLogger
 from dataclasses import dataclass, InitVar
 
 logger = makeLogger("USERS")
