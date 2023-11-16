@@ -1,5 +1,7 @@
+from dataclasses import dataclass, InitVar, field
+
 from .fields import ZermeloField, ZermeloCollection, from_zermelo_dict
-from dataclasses import dataclass, InitVar
+from .users import Leerling, Leerlingen, Personeel, Medewerker
 from ..logger import makeLogger
 
 logger = makeLogger("BRANCH")
@@ -18,14 +20,21 @@ class SchoolInSchoolYear:
     schoolHrmsCode: str
 
 
+@from_zermelo_dict
 @dataclass
 class Branch(ZermeloField):
-    schoolinschoolyear: InitVar
+    id: int
+    schoolInSchoolYear: int
+    branch: str
+    name: str
+    schoolYear: int
+    leerlingen: list[Leerling] = field(default_factory=list)
+    personeel: list[Medewerker] = field(default_factory=list)
 
-    def __post_init__(self, schoolinschoolyear: SchoolInSchoolYear):
-        query = f"branchesofschools/?schoolInSchoolYear={schoolinschoolyear.id}"
-        data = self.load(query)
-        print(data)
+    def __post_init__(self):
+        logger.info(f"*** loading branch: {self.name} ***")
+        self.leerlingen = Leerlingen(self.schoolInSchoolYear)
+        self.personeel = Personeel(self.schoolInSchoolYear)
 
 
 @dataclass
@@ -35,7 +44,12 @@ class Branches(ZermeloCollection, list[Branch]):
     def __post_init__(self, year: int = 2023):
         query = f"schoolsinschoolyears/?year={year}&archived=False"
         data = self.load(query)
-        for row in data:
-            school = SchoolInSchoolYear(row)
-            print(school)
-            self.append(Branch(school))
+        for schoolrow in data:
+            school = SchoolInSchoolYear(schoolrow)
+            query = f"branchesofschools/?schoolInSchoolYear={school.id}"
+            data = self.load(query)
+            for branchrow in data:
+                self.append(Branch(branchrow))
+
+    def __str__(self):
+        return "Branches(" + ", ".join([br.name for br in self]) + ")"

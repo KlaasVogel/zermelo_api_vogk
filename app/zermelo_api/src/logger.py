@@ -1,13 +1,20 @@
 import logging
 import logging.handlers
+from logging import Logger
 from logging import DEBUG, INFO
 from os import path, mkdir
+from traceback import format_exc
 
 FOLDER = "log"
 FILE = "info"
 
 
-def makeLogger(name: str = None, LOG_LEVEL: int = INFO) -> logging.Logger:
+class MyLogger(Logger):
+    def trace(self):
+        self.error(format_exc())
+
+
+def makeLogger(name: str = None, LOG_LEVEL: int = INFO) -> MyLogger:
     logger = logging.getLogger(name)
     logger.setLevel(LOG_LEVEL)
     if not path.isdir(FOLDER):
@@ -26,5 +33,7 @@ def makeLogger(name: str = None, LOG_LEVEL: int = INFO) -> logging.Logger:
     handler.setFormatter(formatter)
 
     logger.addHandler(handler)
+
+    logger.__class__ = MyLogger
 
     return logger
