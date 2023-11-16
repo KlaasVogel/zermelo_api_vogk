@@ -1,7 +1,7 @@
 from zermelo_api import Branches
 
 branches = Branches(2023)
-print(branches)
+# print(branches)
 
-for branch in branches:
-    print(branch)
+# for branch in branches:
+#     print(branch)
