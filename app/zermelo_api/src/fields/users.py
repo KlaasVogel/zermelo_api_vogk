@@ -1,6 +1,6 @@
-from dataclasses import dataclass, InitVar
-from .fields import from_zermelo_dict, ZermeloCollection
+from ..zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
 from ..logger import makeLogger
+from dataclasses import dataclass, InitVar
 
 logger = makeLogger("USERS")
 
@@ -65,13 +65,16 @@ class Leerlingen(ZermeloCollection, Users, list[Leerling]):
 
     def __init__(self, schoolinschoolyear: int):
         query = f"users?schoolInSchoolYear={schoolinschoolyear}&isStudent=true"
-        data = self.load(query)
+        data = zermelo.load_query(query)
         if data:
-            logger.info("loading Leerlingen")
-            data.sort(key=lambda x: (x["lastName"], x["firstName"]))
-            for idx, row in enumerate(data):
-                self.append(Leerling(row, volgnr=idx + 1))
-            logger.info(f"found: {len(self)} leerlingen")
+            self.load_leerlingen(data)
+
+    def load_leerlingen(self, data: list[dict]):
+        logger.info("loading Leerlingen")
+        data.sort(key=lambda x: (x["lastName"], x["firstName"]))
+        for idx, row in enumerate(data):
+            self.append(Leerling(row, volgnr=idx + 1))
+        logger.info(f"found: {len(self)} leerlingen")
 
     def __repr__(self):
         return f"{self}{self.print_list()}"
@@ -97,12 +100,7 @@ class Personeel(ZermeloCollection, Users, list[Medewerker]):
 
     def __init__(self, schoolinschoolyear: int):
         query = f"users?schoolInSchoolYear={schoolinschoolyear}&isEmployee=true"
-        data = self.load(query)
-        if data:
-            logger.info("loading Personeel")
-            for row in data:
-                self.append(Medewerker(row))
-            logger.info(f"found: {len(self)} medewerkers")
+        self.load_collection(query, Medewerker)
 
     def __repr__(self):
         return f"{self}{self.print_list()}"

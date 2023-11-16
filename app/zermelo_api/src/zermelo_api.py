@@ -2,6 +2,9 @@ from .credentials import Credentials
 from .logger import makeLogger, DEBUG, INFO
 import json
 import requests
+from dataclasses import dataclass, InitVar
+import inspect
+from typing import Callable
 
 logger = makeLogger("ZermeloAPI", INFO)
 
@@ -86,3 +89,46 @@ class ZermeloAPI:
             logger.trace()
         finally:
             return result
+
+    def load_query(self, query: str) -> list[dict]:
+        try:
+            status, data = self.getData(query)
+            if status != 200:
+                raise Exception(f"Error loading data {status}")
+            if not data:
+                logger.debug("no data")
+        except Exception as e:
+            logger.debug(e)
+            data = []
+        return data
+
+
+zermelo = ZermeloAPI()
+
+if not zermelo.checkCreds():
+    with open("creds.ini") as f:
+        token = f.read()
+        zermelo.add_token(token)
+
+
+def from_zermelo_dict(cls):
+    def dict_checker(data: dict, *args, **kwargs):
+        [
+            logger.debug(f"{k} ({v}) not defined in {cls}")
+            for k, v in data.items()
+            if k not in inspect.signature(cls).parameters
+        ]
+        return cls(
+            *args,
+            **kwargs,
+            **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
+        )
+
+    return dict_checker
+
+
+class ZermeloCollection:
+    def load_collection(self: list, query: str, type: Callable) -> None:
+        data = zermelo.load_query(query)
+        for row in data:
+            self.append(type(row))

@@ -1,6 +1,6 @@
-from dataclasses import dataclass, InitVar
-from .fields import from_zermelo_dict, ZermeloCollection
+from ..zermelo_api import from_zermelo_dict, ZermeloCollection
 from ..logger import makeLogger
+from dataclasses import dataclass, InitVar
 
 logger = makeLogger("DEPARTMENTS")
 
@@ -31,8 +31,4 @@ class Leerjaren(ZermeloCollection, list[Leerjaar]):
 
     def __post_init__(self, schoolinschoolyear: int):
         query = f"departmentsofbranches?schoolInSchoolYear={schoolinschoolyear}"
-        data = self.load(query)
-        for row in data:
-            self.append(Leerjaar(row))
-        for leerjaar in self:
-            print(leerjaar)
+        self.load_collection(query, Leerjaar)
