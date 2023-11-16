@@ -2,6 +2,7 @@ from dataclasses import dataclass, InitVar, field
 
 from .fields import ZermeloField, ZermeloCollection, from_zermelo_dict
 from .users import Leerling, Leerlingen, Personeel, Medewerker
+from .departments import Leerjaren, Leerjaar
 from ..logger import makeLogger
 
 logger = makeLogger("BRANCH")
@@ -11,13 +12,13 @@ logger = makeLogger("BRANCH")
 @dataclass
 class SchoolInSchoolYear:
     id: int
-    school: int
-    year: int
-    archived: bool
-    name: str
-    projectName: str
-    schoolName: str
-    schoolHrmsCode: str
+    # school: int
+    # year: int
+    # archived: bool
+    # name: str
+    # projectName: str
+    # schoolName: str
+    # schoolHrmsCode: str
 
 
 @from_zermelo_dict
@@ -30,11 +31,13 @@ class Branch(ZermeloField):
     schoolYear: int
     leerlingen: list[Leerling] = field(default_factory=list)
     personeel: list[Medewerker] = field(default_factory=list)
+    leerjaren: list[Leerjaar] = field(default_factory=list)
 
     def __post_init__(self):
         logger.info(f"*** loading branch: {self.name} ***")
         self.leerlingen = Leerlingen(self.schoolInSchoolYear)
         self.personeel = Personeel(self.schoolInSchoolYear)
+        self.leerjaren = Leerjaren(self.schoolInSchoolYear)
 
 
 @dataclass

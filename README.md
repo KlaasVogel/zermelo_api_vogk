@@ -9,4 +9,4 @@ Added backtracker to MyLogger
 Added Loading of Branches
 
 - V0.0.1 -> V0.0.5:
-Experimenting with creating of own package and deciding major buildup of project
+Experimenting with creating of own package and deciding on major buildup of project
