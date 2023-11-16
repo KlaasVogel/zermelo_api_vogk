@@ -1,9 +1,8 @@
-from ..logger import makeLogger
-from ..zermelo_api import ZermeloCollection, from_zermelo_dict, zermelo
+from .logger import makeLogger
+from .zermelo_api import ZermeloCollection, from_zermelo_dict, zermelo
 from .users import Leerling, Leerlingen, Personeel, Medewerker
 from .departments import Leerjaren, Leerjaar
 from dataclasses import dataclass, InitVar, field
-
 
 logger = makeLogger("BRANCH")
 

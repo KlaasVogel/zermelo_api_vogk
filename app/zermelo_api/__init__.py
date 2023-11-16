@@ -1,2 +1,2 @@
 from .src.zermelo_api import ZermeloAPI
-from .src.fields import *
+from .src.branches import Branch, Branches
