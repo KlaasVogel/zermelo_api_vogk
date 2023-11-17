@@ -1,7 +1,10 @@
 # zermelo_api_vogk
 A Module to create a Zermelo access token and put data from Zermelo in dataclasses
 
-- V0.1.0: First Refactoring already:
+## V0.1.1: added Vakken / Groepen
+  + TODO: make/improve test of zermelo_data for easy insertment
+
+## V0.1.0: First Refactoring already:
 deleted fields.py and moved usefull functions to zermelo_api
 loading of data for (zermelo)list generalized in zermelo_api
 
@@ -13,4 +16,4 @@ Added backtracker to MyLogger
 Added Loading of Branches
 
 - V0.0.1 -> V0.0.5:
-Experimenting with creating of own package and deciding on major buildup of project
+Experimenting with creating of own package and major structure of project

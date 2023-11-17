@@ -1,8 +1,13 @@
 from .logger import makeLogger
 from .zermelo_api import ZermeloCollection, from_zermelo_dict, zermelo
 from .users import Leerling, Leerlingen, Personeel, Medewerker
-from .departments import Leerjaren, Leerjaar
+from .leerjaren import Leerjaren, Leerjaar
+from .groepen import Groep, Groepen
+from .vakken import Vakken, Vak
 from dataclasses import dataclass, InitVar, field
+
+# branch is roughly translated to 'afdeling' in Dutch
+# for readability kept as branch, might be changed in the future
 
 logger = makeLogger("BRANCH")
 
@@ -31,12 +36,16 @@ class Branch:
     leerlingen: list[Leerling] = field(default_factory=list)
     personeel: list[Medewerker] = field(default_factory=list)
     leerjaren: list[Leerjaar] = field(default_factory=list)
+    groepen: list[Groep] = field(default_factory=list)
+    vakken: list[Vak] = field(default_factory=list)
 
     def __post_init__(self):
         logger.info(f"*** loading branch: {self.name} ***")
         self.leerlingen = Leerlingen(self.schoolInSchoolYear)
         self.personeel = Personeel(self.schoolInSchoolYear)
         self.leerjaren = Leerjaren(self.schoolInSchoolYear)
+        self.groepen = Groepen(self.schoolInSchoolYear)
+        self.vakken = Vakken(self.schoolInSchoolYear)
 
 
 @dataclass
