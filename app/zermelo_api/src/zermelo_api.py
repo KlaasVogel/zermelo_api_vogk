@@ -132,3 +132,8 @@ class ZermeloCollection:
         data = zermelo.load_query(query)
         for row in data:
             self.append(type(row))
+
+    def test(self: list, query: str):
+        data = zermelo.load_query(query)
+        for row in data:
+            logger.info(f"test: {row}")

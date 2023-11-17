@@ -2,7 +2,9 @@ from .zermelo_api import from_zermelo_dict, ZermeloCollection
 from .logger import makeLogger
 from dataclasses import dataclass, InitVar
 
-logger = makeLogger("DEPARTMENTS")
+# Leerjaar is a rough dutch translation of department in Zermelo
+
+logger = makeLogger("Leerjaren")
 
 
 @from_zermelo_dict
