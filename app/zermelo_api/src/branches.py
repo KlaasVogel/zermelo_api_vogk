@@ -3,6 +3,7 @@ from .zermelo_api import ZermeloCollection, from_zermelo_dict, zermelo
 from .users import Leerling, Leerlingen, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
 from .groepen import Groep, Groepen
+from .lesgroepen import Lesgroepen, Lesgroep
 from .vakken import Vakken, Vak
 from dataclasses import dataclass, InitVar, field
 
@@ -38,6 +39,7 @@ class Branch:
     leerjaren: list[Leerjaar] = field(default_factory=list)
     groepen: list[Groep] = field(default_factory=list)
     vakken: list[Vak] = field(default_factory=list)
+    lesgroepen: list[Lesgroep] = field(default_factory=list)
 
     def __post_init__(self):
         logger.info(f"*** loading branch: {self.name} ***")
@@ -45,7 +47,15 @@ class Branch:
         self.personeel = Personeel(self.schoolInSchoolYear)
         self.leerjaren = Leerjaren(self.schoolInSchoolYear)
         self.groepen = Groepen(self.schoolInSchoolYear)
-        self.vakken = Vakken(self.schoolInSchoolYear)
+        self.vakken = Vakken(self.schoolInSchoolYear, self.groepen)
+        if self.leerlingen and self.personeel:
+            self.lesgroepen = Lesgroepen(
+                self.leerjaren,
+                self.vakken,
+                self.groepen,
+                self.leerlingen,
+                self.personeel,
+            )
 
 
 @dataclass
