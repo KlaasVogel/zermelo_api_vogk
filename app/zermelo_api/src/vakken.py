@@ -1,6 +1,9 @@
-from .zermelo_api import from_zermelo_dict, ZermeloCollection
-from .logger import makeLogger
-from dataclasses import dataclass, InitVar
+from .zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
+from .logger import makeLogger, DEBUG
+from .groepen import Groepen, Groep
+from dataclasses import dataclass, InitVar, field
+
+logger = makeLogger("VAKKEN")
 
 
 @from_zermelo_dict
@@ -30,10 +33,12 @@ class Vak:
 @dataclass
 class Vakken(ZermeloCollection, list[Vak]):
     schoolinschoolyear: InitVar
+    groepen: InitVar
 
-    def __post_init__(self, schoolinschoolyear: int):
+    def __post_init__(self, schoolinschoolyear: int, groepen: Groepen):
         query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
         self.load_collection(query, Vak)
+        # [vak.find_groepen(groepen) for vak in self]
 
-        for vak in self:
-            print(vak)
+    def get_leerjaar_vakken(self, leerjaar_id: int) -> list[Vak]:
+        return [vak for vak in self if vak.departmentOfBranch == leerjaar_id]

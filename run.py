@@ -1,7 +1,5 @@
-from zermelo_api import Branches
+from zermelo_api import Branches, get_year
 
-branches = Branches(2023)
-# print(branches)
+year = get_year()
 
-# for branch in branches:
-#     print(branch)
+branches = Branches(year)

@@ -6,7 +6,7 @@ from dataclasses import dataclass, InitVar
 import inspect
 from typing import Callable
 
-logger = makeLogger("ZermeloAPI", INFO)
+logger = makeLogger("ZermeloAPI")
 
 ZERMELO_NAME = "carmelhengelo"
 
