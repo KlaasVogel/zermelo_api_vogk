@@ -145,9 +145,16 @@ def find_deelnemers(
         logger.trace()
         return False
 
-def get_info(llnrs: list[int], doc_codes: list[str], names: list[str], ll: Leerlingen, docs: Personeel) -> tuple[list[Leerling], list[Medewerker], list[str]]:
+
+def get_info(
+    llnrs: list[int],
+    doc_codes: list[str],
+    names: list[str],
+    ll: Leerlingen,
+    docs: Personeel,
+) -> tuple[list[Leerling], list[Medewerker], list[str]]:
     leerlingen = [ll.get(llnr) for llnr in llnrs]
-    docenten  = [docs.get(code) for code in doc_codes]
+    docenten = [docs.get(code) for code in doc_codes]
     return (leerlingen, docenten, names)
 
 
@@ -197,8 +204,8 @@ class Lesgroepen(list[Lesgroep]):
                 for groep in find_groepen(vak, groepen):
                     groepinfo = find_deelnemers(vak, groep)
                     if groepinfo:
-                        data = get_info(*groepinfo,leerlingen, personeel)
-                        self.append(Lesgroep(vak, groep, leerjaar,*data))
+                        data = get_info(*groepinfo, leerlingen, personeel)
+                        self.append(Lesgroep(vak, groep, leerjaar, *data))
                         found = True
                 if found:
                     continue
@@ -209,8 +216,8 @@ class Lesgroepen(list[Lesgroep]):
                     logger.debug(f"trying: {groep}")
                     groepinfo = find_deelnemers(vak, groep)
                     if groepinfo:
-                        data = get_info(*groepinfo,leerlingen, personeel)
-                        self.append(Lesgroep(vak, groep, leerjaar,*data))
+                        data = get_info(*groepinfo, leerlingen, personeel)
+                        self.append(Lesgroep(vak, groep, leerjaar, *data))
                         found = True
                 if not found:
                     logger.warning(f"geen groepen gevonden voor {vak}")
@@ -221,8 +228,3 @@ class Lesgroepen(list[Lesgroep]):
         for lesgroep in self:
             for leerling in lesgroep.leerlingen.copy():
                 ...
-
-
-
-
-        
