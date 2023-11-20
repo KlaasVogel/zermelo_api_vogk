@@ -48,13 +48,11 @@ class Branch:
         self.leerjaren = Leerjaren(self.schoolInSchoolYear)
         self.groepen = Groepen(self.schoolInSchoolYear)
         self.vakken = Vakken(self.schoolInSchoolYear, self.groepen)
+
+    def load_lesgroepen(self):
         if self.leerlingen and self.personeel:
             self.lesgroepen = Lesgroepen(
-                self.leerjaren,
-                self.vakken,
-                self.groepen,
-                self.leerlingen,
-                self.personeel,
+                self.leerjaren, self.vakken, self.groepen, self.leerlingen
             )
 
 

@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field, InitVar
 from .vakken import Vakken, Vak
 from .groepen import Groepen, Groep
-from .users import Leerlingen, Personeel
-from .leerjaren import Leerjaren
+from .users import Leerlingen, Leerling, Personeel, Medewerker
+from .leerjaren import Leerjaren, Leerjaar
 from .time_utils import get_date, delta_week
 from .logger import makeLogger, DEBUG
-from .zermelo_api import zermelo
+from .zermelo_api import zermelo, from_zermelo_dict
 
 # from typing import Tuple
 
@@ -52,53 +52,76 @@ def clean_docs(docs: list[str]) -> list[str]:
     return checklist
 
 
+@from_zermelo_dict
+@dataclass
+class Les:
+    id: int
+    appointmentInstance: int
+    teachers: list[str]
+    students: list[str]
+    subjects: list[str]
+    groups: list[int]
+    groupsInDepartments: list[int]
+    choosableInDepartmentCodes: list[str]
+    valid: bool
+    cancelled: bool
+
+    def filter(self) -> bool:
+        if self.cancelled:
+            return False
+        if not self.valid:
+            return False
+        if len(self.students) > 40:
+            logger.debug("groep te groot")
+            return False
+        return True
+
+
 def get_vak_data(
     id: int, code: str, start, eind
 ) -> tuple[list[int], list[str], list[str]]:
     query = f"appointments/?containsStudentsFromGroupInDepartment={id}&subjects={code}&type=lesson&start={start}&end={eind}&fields=appointmentInstance,id,teachers,students,subjects,groups,groupsInDepartments,choosableInDepartmentCodes,valid,cancelled"
     vakdata = zermelo.load_query(query)
-    leerlingen = []
-    docenten = []
-    lesgroepen = []
     grp_bck = []
     ll_bck = []
     doc_bck = []
-    for row in reversed(vakdata):
-        if row["valid"] and not row["cancelled"] and code in row["subjects"]:
-            logger.debug(f"get vak: {code}")
-            logger.debug(f"groep: {id}")
-            logger.debug(row)
-            ll_data = row["students"]
-            doc_data = row["teachers"]
-            grp_data = row["choosableInDepartmentCodes"]
-            if len(ll_data) > 40:
-                logger.debug("groep te groot")
-                continue
-            if len(row["groups"]) > 1:
-                if not lesgroepen and not grp_bck or len(row["groups"]) < len(grp_bck):
-                    logger.warning("meerdere groepen")
-                    grp_bck = grp_data
-                    ll_bck = list(set([llnr for llnr in ll_data]))
-                    doc_bck = list(set([doc for doc in doc_data]))
-                continue
-            if ll_data and doc_data:
-                [leerlingen.append(llnr) for llnr in ll_data if llnr not in leerlingen]
-                [docenten.append(doc) for doc in doc_data]
-                [lesgroepen.append(grp) for grp in grp_data if grp not in lesgroepen]
-    if not lesgroepen and grp_bck:
-        logger.warning(f"result groepen: {grp_bck}")
-        lesgroepen = grp_bck
+    leerlingen = []
+    docenten = []
+    grp_namen = []
+    lessen = [Les(row) for row in reversed(vakdata)]
+    for les in [les for les in lessen if les.filter()]:
+        if len(les.groups) > 1:
+            if not grp_namen and not grp_bck or len(les.groups) < len(grp_bck):
+                logger.debug("meerdere groepen")
+                grp_bck = les.choosableInDepartmentCodes
+                ll_bck = list(set([llnr for llnr in les.students]))
+                doc_bck = list(set([doc for doc in les.teachers]))
+            continue
+        if les.students and les.teachers:
+            [leerlingen.append(llnr) for llnr in les.students if llnr not in leerlingen]
+            [docenten.append(doc) for doc in les.teachers]
+            [
+                grp_namen.append(grp)
+                for grp in les.choosableInDepartmentCodes
+                if grp not in grp_namen
+            ]
+    if not grp_namen and grp_bck:
+        logger.debug(f"result groepen: {grp_bck}")
+        grp_namen = grp_bck
     if not docenten and doc_bck:
-        logger.warning(f"result docenten: {doc_bck}")
+        logger.debug(f"result docenten: {doc_bck}")
         docenten = doc_bck
     if not leerlingen and ll_bck:
-        logger.warning(f"result leerlingen: {ll_bck}")
+        logger.debug(f"result leerlingen: {ll_bck}")
         leerlingen = ll_bck
     docenten = clean_docs(docenten)
-    return (leerlingen, docenten, lesgroepen)
+    leerlingen = [int(llnr) for llnr in leerlingen]
+    return (leerlingen, docenten, grp_namen)
 
 
-def find_deelnemers(vak: Vak, groep: Groep) -> tuple[list[int], list[str], list[str]]:
+def find_deelnemers(
+    vak: Vak, groep: Groep
+) -> tuple[list[int], list[str], list[str]] | bool:
     date = get_date()
     try:
         for x in [0, -1, -2, 1, 2, 3]:
@@ -106,32 +129,43 @@ def find_deelnemers(vak: Vak, groep: Groep) -> tuple[list[int], list[str], list[
             starttijd = int(delta_week(date, dweek).timestamp())
             eindtijd = int(delta_week(date, dweek + 4).timestamp())
             data = get_vak_data(groep.id, vak.subjectCode, starttijd, eindtijd)
-            leerlingen, docenten, groep_ids = data
+            leerlingen, docenten, groep_namen = data
             if len(leerlingen) and len(docenten):
                 logger.debug(f"found for {groep}")
-                break
+                namen = [
+                    groepnaam
+                    for groepnaam in groep_namen
+                    if vak.departmentOfBranchCode in groepnaam
+                ]
+                return (leerlingen, docenten, namen)
         if not len(leerlingen) or not len(docenten):
             logger.debug(f"geen deelnemers gevonden voor {groep}\n {vak}")
+            return False
     except Exception:
         logger.trace()
-        data = ([], [], [])
-    finally:
-        return data
+        return False
+
+def get_info(llnrs: list[int], doc_codes: list[str], names: list[str], ll: Leerlingen, docs: Personeel) -> tuple[list[Leerling], list[Medewerker], list[str]]:
+    leerlingen = [ll.get(llnr) for llnr in llnrs]
+    docenten  = [docs.get(code) for code in doc_codes]
+    return (leerlingen, docenten, names)
 
 
 @dataclass
 class Lesgroep:
     vak: Vak
     groep: Groep
-    leerjaar: str
-    naam: str = ""
-    docenten: list[str] = field(default_factory=list)
-    leerlingen: list[int] = field(default_factory=list)
+    leerjaar: Leerjaar
+    docenten: list[Medewerker] = field(default_factory=list)
+    leerlingen: list[Leerling] = field(default_factory=list)
     namen: list[str] = field(default_factory=list)
+    naam: str = ""
     lastcheck: int = 0
 
     def __post_init__(self):
         self.naam = createLesgroepNaam(self.vak, self.groep)
+        for leerling in self.leerlingen:
+            leerling.leerjaren.add(self.leerjaar.id)
 
 
 @dataclass
@@ -152,6 +186,43 @@ class Lesgroepen(list[Lesgroep]):
     ):
         for leerjaar in leerjaren:
             for vak in vakken.get_leerjaar_vakken(leerjaar.id):
-                logger.info(vak)
+                if vak.subjectType in ["education", "profile"] or vak.scheduleCode in [
+                    "lo",
+                    "sport",
+                ]:
+                    # skip educatio / profile / lo
+                    continue
+                logger.debug(vak)
+                found = False
                 for groep in find_groepen(vak, groepen):
-                    logger.info(find_deelnemers(vak, groep))
+                    groepinfo = find_deelnemers(vak, groep)
+                    if groepinfo:
+                        data = get_info(*groepinfo,leerlingen, personeel)
+                        self.append(Lesgroep(vak, groep, leerjaar,*data))
+                        found = True
+                if found:
+                    continue
+                logger.debug(f"trying maingroups for {vak.subjectName}")
+                for groep in groepen.get_department_groups(
+                    vak.departmentOfBranch, True
+                ):
+                    logger.debug(f"trying: {groep}")
+                    groepinfo = find_deelnemers(vak, groep)
+                    if groepinfo:
+                        data = get_info(*groepinfo,leerlingen, personeel)
+                        self.append(Lesgroep(vak, groep, leerjaar,*data))
+                        found = True
+                if not found:
+                    logger.warning(f"geen groepen gevonden voor {vak}")
+        self.clean_leerlingen(leerlingen)
+        logger.info(f"found {len(self)} lesgroepen")
+
+    def clean_leerlingen(self):
+        for lesgroep in self:
+            for leerling in lesgroep.leerlingen.copy():
+                ...
+
+
+
+
+        

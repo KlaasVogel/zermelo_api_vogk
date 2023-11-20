@@ -24,14 +24,13 @@ class Groepen(ZermeloCollection, list[Groep]):
         query = f"groupindepartments?schoolInSchoolYear={schoolinschoolyear}"
         self.load_collection(query, Groep)
 
-    def get_department_groups(self, departmentOfBranch: int) -> list[Groep]:
-        return [
-            groep for groep in self if groep.departmentOfBranch == departmentOfBranch
-        ]
-
-    def get_main_groups(self, departmentOfBranch: int) -> list[Groep]:
+    def get_department_groups(
+        self, departmentOfBranch: int, maingroup: bool = False
+    ) -> list[Groep]:
+        # returns all groups (if it is/isnt stamklas (maingroup))
         return [
             groep
-            for groep in self.get_department_groups(departmentOfBranch)
-            if groep.isMainGroup
+            for groep in self
+            if groep.departmentOfBranch == departmentOfBranch
+            and groep.isMainGroup == maingroup
         ]
