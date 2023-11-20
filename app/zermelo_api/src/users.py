@@ -1,6 +1,6 @@
 from .zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
 from .logger import makeLogger
-from dataclasses import dataclass, InitVar
+from dataclasses import dataclass, InitVar, field
 
 logger = makeLogger("USERS")
 
@@ -53,10 +53,36 @@ class Users(list[User]):
         )
 
 
+@dataclass
+class LeerjaarCounter:
+    id: int
+    count: int = 0
+
+
+class LeerjaarCounters(list[LeerjaarCounter]):
+    def get(self, id) -> LeerjaarCounter:
+        for ljcounter in self:
+            if ljcounter.id == id:
+                return ljcounter
+        self.append(LeerjaarCounter(id))
+        return self[-1]
+
+    def add(self, leerjaar_id: int):
+        counter = self.get(leerjaar_id)
+        counter.count += 1
+
+    def get_id(self) -> int:
+        if len(self):
+            self.sort(key=lambda x: x.count, reverse=True)
+            return self[0].id
+        return 0
+
+
 @from_zermelo_dict
 @dataclass
 class Leerling(User):
     volgnr: int = 0
+    leerjaren: LeerjaarCounters = field(default_factory=LeerjaarCounters)
 
 
 @dataclass
@@ -107,3 +133,8 @@ class Personeel(ZermeloCollection, Users, list[Medewerker]):
 
     def __str__(self):
         return f"Personeel({len(self)})"
+
+    def get(self, code: str):
+        for user in self:
+            if user.code == code:
+                return user

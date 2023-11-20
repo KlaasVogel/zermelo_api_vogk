@@ -7,6 +7,15 @@ from dataclasses import dataclass, InitVar
 logger = makeLogger("Leerjaren")
 
 
+def getLeerjaarNaam(string):
+    names = {"LG1": "klas 1", "LG2": "klas 2", "LG3": "klas 3"}
+    for name, result in names.items():
+        if name in string:
+            return result
+    else:
+        return string
+
+
 @from_zermelo_dict
 @dataclass
 class Leerjaar:
@@ -25,6 +34,10 @@ class Leerjaar:
     schoolInSchoolYearName: str
     profiles: list[int]
     schoolInSchoolYearId: int
+    name: str = ""
+
+    def __post_init__(self):
+        self.name = getLeerjaarNaam(self.code.upper())
 
 
 @dataclass
