@@ -1,10 +1,16 @@
 ## zermelo_api_vogk
 A Module to create a Zermelo access token and put data from Zermelo in dataclasses
 
-# V0.1.1 - V0.1.2: added Vakken / Groepen
+# V0.1.3
+- added lesgroepen
+
+# V0.1.2
+- added Vakken
+
+# V0.1.1
+  - added groepen / groups
   - First setup of vakken
   - cleanup of code
-  + TODO: make/improve test of zermelo_data for easy insertment
 
 # V0.1.0: First Refactoring already:
 - deleted fields.py and moved usefull functions to zermelo_api
