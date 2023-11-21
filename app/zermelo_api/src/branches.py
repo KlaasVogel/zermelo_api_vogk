@@ -52,7 +52,11 @@ class Branch:
     def load_lesgroepen(self):
         if self.leerlingen and self.personeel:
             self.lesgroepen = Lesgroepen(
-                self.leerjaren, self.vakken, self.groepen, self.leerlingen
+                self.leerjaren,
+                self.vakken,
+                self.groepen,
+                self.leerlingen,
+                self.personeel,
             )
 
 
@@ -70,3 +74,11 @@ class Branches(ZermeloCollection, list[Branch]):
 
     def __str__(self):
         return "Branches(" + ", ".join([br.name for br in self]) + ")"
+
+    def get(self, name: str) -> Branch:
+        for branch in self:
+            if (
+                name.lower() in branch.branch.lower()
+                or branch.branch.lower() in name.lower()
+            ):
+                return branch

@@ -163,8 +163,8 @@ class Lesgroep:
     vak: Vak
     groep: Groep
     leerjaar: Leerjaar
-    docenten: list[Medewerker] = field(default_factory=list)
     leerlingen: list[Leerling] = field(default_factory=list)
+    docenten: list[Medewerker] = field(default_factory=list)
     namen: list[str] = field(default_factory=list)
     naam: str = ""
     lastcheck: int = 0
@@ -221,10 +221,14 @@ class Lesgroepen(list[Lesgroep]):
                         found = True
                 if not found:
                     logger.warning(f"geen groepen gevonden voor {vak}")
-        self.clean_leerlingen(leerlingen)
+        self.clean_leerlingen()
         logger.info(f"found {len(self)} lesgroepen")
 
     def clean_leerlingen(self):
         for lesgroep in self:
             for leerling in lesgroep.leerlingen.copy():
-                ...
+                if leerling.leerjaren.get_id() != lesgroep.leerjaar.id:
+                    logger.warning(
+                        f"removing leerling ({leerling.fullName}) from {lesgroep.naam}"
+                    )
+                    lesgroep.leerlingen.remove(leerling)
