@@ -1,6 +1,9 @@
 ## zermelo_api_vogk
 A Module to create a Zermelo access token and put data from Zermelo in dataclasses
 
+# V0.2.0
+ - changed decorator from_zermelo_dict to function
+
 # V0.1.3
 - added lesgroepen
 

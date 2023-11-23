@@ -1,4 +1,4 @@
-from .zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
+from .zermelo_api import ZermeloCollection, zermelo
 from .logger import makeLogger, DEBUG
 from .groepen import Groepen, Groep
 from dataclasses import dataclass, InitVar, field
@@ -6,7 +6,6 @@ from dataclasses import dataclass, InitVar, field
 logger = makeLogger("VAKKEN")
 
 
-@from_zermelo_dict
 @dataclass
 class Vak:
     id: int
