@@ -1,5 +1,5 @@
 from .logger import makeLogger
-from .zermelo_api import ZermeloCollection, from_zermelo_dict, zermelo
+from .zermelo_api import ZermeloCollection, zermelo, from_zermelo_dict
 from .users import Leerling, Leerlingen, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
 from .groepen import Groep, Groepen
@@ -13,7 +13,6 @@ from dataclasses import dataclass, InitVar, field
 logger = makeLogger("BRANCH")
 
 
-@from_zermelo_dict
 @dataclass
 class SchoolInSchoolYear:
     id: int
@@ -26,7 +25,6 @@ class SchoolInSchoolYear:
     # schoolHrmsCode: str
 
 
-@from_zermelo_dict
 @dataclass
 class Branch:
     id: int
@@ -37,8 +35,8 @@ class Branch:
     leerlingen: list[Leerling] = field(default_factory=list)
     personeel: list[Medewerker] = field(default_factory=list)
     leerjaren: list[Leerjaar] = field(default_factory=list)
-    groepen: list[Groep] = field(default_factory=list)
     vakken: list[Vak] = field(default_factory=list)
+    groepen: list[Groep] = field(default_factory=list)
     lesgroepen: list[Lesgroep] = field(default_factory=list)
 
     def __post_init__(self):
@@ -68,7 +66,7 @@ class Branches(ZermeloCollection, list[Branch]):
         query = f"schoolsinschoolyears/?year={year}&archived=False"
         data = zermelo.load_query(query)
         for schoolrow in data:
-            school = SchoolInSchoolYear(schoolrow)
+            school = from_zermelo_dict(SchoolInSchoolYear, schoolrow)
             query = f"branchesofschools/?schoolInSchoolYear={school.id}"
             self.load_collection(query, Branch)
 

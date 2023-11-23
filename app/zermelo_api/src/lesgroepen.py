@@ -5,7 +5,7 @@ from .users import Leerlingen, Leerling, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
 from .time_utils import get_date, delta_week
 from .logger import makeLogger, DEBUG
-from .zermelo_api import zermelo, from_zermelo_dict
+from .zermelo_api import zermelo
 
 # from typing import Tuple
 
@@ -52,7 +52,6 @@ def clean_docs(docs: list[str]) -> list[str]:
     return checklist
 
 
-@from_zermelo_dict
 @dataclass
 class Les:
     id: int

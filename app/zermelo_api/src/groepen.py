@@ -1,11 +1,10 @@
-from .zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
+from .zermelo_api import ZermeloCollection, zermelo
 from .logger import makeLogger
 from dataclasses import dataclass, InitVar
 
 logger = makeLogger("GROEPEN")
 
 
-@from_zermelo_dict
 @dataclass
 class Groep:
     id: int

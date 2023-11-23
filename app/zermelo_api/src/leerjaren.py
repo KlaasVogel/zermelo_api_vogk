@@ -1,4 +1,4 @@
-from .zermelo_api import from_zermelo_dict, ZermeloCollection
+from .zermelo_api import ZermeloCollection
 from .logger import makeLogger
 from dataclasses import dataclass, InitVar
 
@@ -16,7 +16,6 @@ def getLeerjaarNaam(string):
         return string
 
 
-@from_zermelo_dict
 @dataclass
 class Leerjaar:
     id: int

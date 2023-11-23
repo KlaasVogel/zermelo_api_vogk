@@ -2,9 +2,7 @@ from .credentials import Credentials
 from .logger import makeLogger, DEBUG, INFO
 import json
 import requests
-from dataclasses import dataclass, InitVar
 import inspect
-from typing import Callable
 
 logger = makeLogger("ZermeloAPI")
 
@@ -111,27 +109,24 @@ if not zermelo.checkCreds():
         zermelo.add_token(token)
 
 
-def from_zermelo_dict(cls):
-    def dict_checker(data: dict, *args, **kwargs):
-        [
-            logger.debug(f"{k} ({v}) not defined in {cls}")
-            for k, v in data.items()
-            if k not in inspect.signature(cls).parameters
-        ]
-        return cls(
-            *args,
-            **kwargs,
-            **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
-        )
-
-    return dict_checker
+def from_zermelo_dict(cls, data: dict, *args, **kwargs):
+    [
+        logger.debug(f"{k} ({v}) not defined in {cls}")
+        for k, v in data.items()
+        if k not in inspect.signature(cls).parameters
+    ]
+    return cls(
+        *args,
+        **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
+        **kwargs,
+    )
 
 
 class ZermeloCollection:
-    def load_collection(self: list, query: str, type: Callable) -> None:
+    def load_collection(self: list, query: str, type: object) -> None:
         data = zermelo.load_query(query)
         for row in data:
-            self.append(type(row))
+            self.append(from_zermelo_dict(type, row))
 
     def test(self: list, query: str):
         data = zermelo.load_query(query)

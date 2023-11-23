@@ -11,7 +11,3 @@ def delta_week(date: datetime, delta: int = 0) -> datetime:
 
 def get_year(datestring: str = "") -> int:
     return delta_week(get_date(datestring), -33).strftime("%Y")
-
-
-def get_start_and_end() -> tuple[int, int]:
-    ...

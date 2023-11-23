@@ -1,4 +1,4 @@
-from .zermelo_api import from_zermelo_dict, ZermeloCollection, zermelo
+from .zermelo_api import ZermeloCollection, zermelo, from_zermelo_dict
 from .logger import makeLogger
 from dataclasses import dataclass, InitVar, field
 
@@ -78,7 +78,6 @@ class LeerjaarCounters(list[LeerjaarCounter]):
         return 0
 
 
-@from_zermelo_dict
 @dataclass
 class Leerling(User):
     volgnr: int = 0
@@ -99,7 +98,7 @@ class Leerlingen(ZermeloCollection, Users, list[Leerling]):
         logger.info("loading Leerlingen")
         data.sort(key=lambda x: (x["lastName"], x["firstName"]))
         for idx, row in enumerate(data):
-            self.append(Leerling(row, volgnr=idx + 1))
+            self.append(from_zermelo_dict(Leerling, row, volgnr=idx + 1))
         logger.info(f"found: {len(self)} leerlingen")
 
     def __repr__(self):
@@ -114,7 +113,6 @@ class Leerlingen(ZermeloCollection, Users, list[Leerling]):
                 return user
 
 
-@from_zermelo_dict
 @dataclass
 class Medewerker(User):
     ...
