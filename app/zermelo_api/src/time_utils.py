@@ -2,7 +2,12 @@ from datetime import datetime, timedelta
 
 
 def get_date(datestring: str = "") -> datetime:
-    return datetime.strptime(datestring, "%Y-%m-%d") if datestring else datetime.today()
+    try:
+        date = datetime.strptime(datestring, "%Y-%m-%d")
+    except:
+        date = datetime.today()
+    finally:
+        return date
 
 
 def delta_week(date: datetime, delta: int = 0) -> datetime:
