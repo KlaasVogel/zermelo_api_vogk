@@ -1,6 +1,10 @@
 ## zermelo_api_vogk
 A Module to create a Zermelo access token and put data from Zermelo in dataclasses
 
+# V0.2.1
+ - added datetime to each branch
+ - init of branches is now only datestring, year will be determined internally
+
 # V0.2.0
  - changed decorator from_zermelo_dict to function
 
