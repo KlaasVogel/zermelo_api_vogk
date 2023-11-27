@@ -49,7 +49,7 @@ class User:
 class Users(list[User]):
     def print_list(self):
         return (
-            f" = [" + ", ".join([u.fullName for u in self]) + "]" if len(self) else ""
+            f" = [" + ", ".join([str(user) for user in self]) + "]" if len(self) else ""
         )
 
 
@@ -115,7 +115,8 @@ class Leerlingen(ZermeloCollection, Users, list[Leerling]):
 
 @dataclass
 class Medewerker(User):
-    ...
+    def __repr__(self):
+        return self.fullName + f"({self.code})"
 
 
 @dataclass

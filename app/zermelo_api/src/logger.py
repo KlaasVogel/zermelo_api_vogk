@@ -1,7 +1,7 @@
 import logging
 import logging.handlers
 from logging import Logger
-from logging import DEBUG, INFO
+from logging import DEBUG, INFO, WARNING, ERROR
 from os import path, mkdir
 from traceback import format_exc
 
@@ -13,13 +13,19 @@ class MyLogger(Logger):
     def trace(self):
         self.error(format_exc())
 
+    def header(self, text: str):
+        self.info(f" ###### {text.upper()} ######")
 
-def makeLogger(name: str = None, LOG_LEVEL: int = INFO) -> MyLogger:
+    def write(self, text: str):
+        self.debug(text)
+
+
+def makeLogger(name: str = None, LOG_LEVEL: int = INFO, filename=FILE) -> MyLogger:
     logger = logging.getLogger(name)
     logger.setLevel(LOG_LEVEL)
     if not path.isdir(FOLDER):
         mkdir(FOLDER)
-    filename = path.join(FOLDER, f"{FILE}.log")
+    filename = path.join(FOLDER, f"{filename}.log")
 
     # create console handler and set level to debug
     handler = logging.handlers.TimedRotatingFileHandler(
