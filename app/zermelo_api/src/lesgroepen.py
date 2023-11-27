@@ -5,7 +5,7 @@ from .users import Leerlingen, Leerling, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
 from .time_utils import get_date, delta_week
 from .logger import makeLogger, DEBUG
-from .zermelo_api import zermelo
+from .zermelo_api import zermelo, from_zermelo_dict
 
 # from typing import Tuple
 
@@ -87,7 +87,7 @@ def get_vak_data(
     leerlingen = []
     docenten = []
     grp_namen = []
-    lessen = [Les(row) for row in reversed(vakdata)]
+    lessen = [Les(**row) for row in reversed(vakdata) if row]
     for les in [les for les in lessen if les.filter()]:
         if len(les.groups) > 1:
             if not grp_namen and not grp_bck or len(les.groups) < len(grp_bck):
