@@ -39,7 +39,6 @@ class Branch:
     leerjaren: list[Leerjaar] = field(default_factory=list)
     vakken: list[Vak] = field(default_factory=list)
     groepen: list[Groep] = field(default_factory=list)
-    lesgroepen: list[Lesgroep] = field(default_factory=list)
 
     def __post_init__(self):
         logger.info(f"*** loading branch: {self.name} ***")
@@ -49,15 +48,16 @@ class Branch:
         self.groepen = Groepen(self.schoolInSchoolYear)
         self.vakken = Vakken(self.schoolInSchoolYear, self.groepen)
 
-    def load_lesgroepen(self):
+    def find_lesgroepen(self) -> Lesgroepen | bool:
         if self.leerlingen and self.personeel:
-            self.lesgroepen = Lesgroepen(
+            return Lesgroepen(
                 self.leerjaren,
                 self.vakken,
                 self.groepen,
                 self.leerlingen,
                 self.personeel,
             )
+        return False
 
 
 @dataclass
