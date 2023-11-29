@@ -166,7 +166,6 @@ class Lesgroep:
     docenten: list[Medewerker] = field(default_factory=list)
     namen: list[str] = field(default_factory=list)
     naam: str = ""
-    lastcheck: int = 0
 
     def __post_init__(self):
         self.naam = createLesgroepNaam(self.vak, self.groep)
