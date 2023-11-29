@@ -2,7 +2,8 @@
 A Module to create a Zermelo access token and put data from Zermelo in dataclasses
 
 # V0.2.3
- - changed getting lesgroepen only as return so not part of branch anymore 
+ - changed getting lesgroepen only as return so not part of branch anymore
+ - removed lastcheck from lesgroepen
 
 # V0.2.2
  - bugfix lesgroepen
