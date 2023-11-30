@@ -1,6 +1,9 @@
 ## zermelo_api_vogk
 A Module to create a Zermelo access token and put data from Zermelo in dataclasses
 
+# V0.2.4
+ - added getting appointments
+
 # V0.2.3
  - changed getting lesgroepen only as return so not part of branch anymore
  - removed lastcheck from lesgroepen
