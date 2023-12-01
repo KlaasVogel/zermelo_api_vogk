@@ -1,5 +1,10 @@
 ## zermelo_api_vogk
-A Module to create a Zermelo access token and put data from Zermelo in dataclasses
+A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
+
+# V0.2.5
+ - trying getting extra data for each appointment from user
+ - changed "with_id" in get_data to "from_id" and reversed functionality for better readability
+ - added classmethod to Appointment to get Appointment direct from id
 
 # V0.2.4
  - added getting appointments
