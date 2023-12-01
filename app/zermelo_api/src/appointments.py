@@ -2,7 +2,7 @@ from .zermelo_api import zermelo, from_zermelo_dict
 from dataclasses import dataclass, InitVar, field
 from logger import makeLogger, DEBUG
 
-logger = makeLogger("APPS", DEBUG)
+logger = makeLogger("APPS")
 
 
 @dataclass
@@ -17,6 +17,7 @@ class Appointment:
     type: str = "unknown"
     groupsInDepartments: list[int] = field(default_factory=list)
     locationsOfBranch: list[int] = field(default_factory=list)
+    locations: list[str] = field(default_factory=list)
     optional: bool = False
     valid: bool = False
     cancelled: bool = False
@@ -59,6 +60,14 @@ class Appointment:
     onlineTeachers: list[str] = field(default_factory=list)
     students: list[str] = field(default_factory=list)
 
+    @classmethod
+    def get_appointment(cls, id: int):
+        query = f"appointments/{id}"
+        status, data = zermelo.getData(query, from_id=True)
+        if status != 200:
+            raise Exception(data)
+        return from_zermelo_dict(cls, data[0])
+
 
 def get_user_appointments(user: int | str, **kwargs) -> list[Appointment]:
     result = []
@@ -69,7 +78,6 @@ def get_user_appointments(user: int | str, **kwargs) -> list[Appointment]:
     status, data = zermelo.getData(query)
     if status != 200:
         raise Exception(data)
-    logger.debug(data)
     for row in data:
         result.append(from_zermelo_dict(Appointment, row))
     logger.debug(result)

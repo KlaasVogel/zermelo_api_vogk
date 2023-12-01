@@ -51,7 +51,7 @@ class ZermeloAPI:
     def getName(self):
         if not self.credentials.token:
             raise Exception("No Token loaded!")
-        status, data = self.getData("users/~me", False)
+        status, data = self.getData("users/~me", True)
         if status != 200 or not len(data):
             raise Exception("could not load user data with token")
         logger.debug(f"get name: {data[0]}")
@@ -61,13 +61,13 @@ class ZermeloAPI:
         else:
             return " ".join([row["firstName"], row["prefix"], row["lastName"]])
 
-    def getData(self, task, with_id=True) -> tuple[int, list[dict]]:
+    def getData(self, task, from_id=False) -> tuple[int, list[dict]]:
         result = (500, [])
         try:
             request = (
-                self.zerurl + task + f"&access_token={self.credentials.token}"
-                if with_id
-                else self.zerurl + task + f"?access_token={self.credentials.token}"
+                self.zerurl + task + f"?access_token={self.credentials.token}"
+                if from_id
+                else self.zerurl + task + f"&access_token={self.credentials.token}"
             )
             logger.debug(request)
             json_response = requests.get(request).json()
