@@ -17,6 +17,7 @@ class MyLogger(Logger):
         self.info(f" ###### {text.upper()} ######")
 
     def write(self, text: str):
+        text.replace("\n", "")
         self.debug(text)
 
 
