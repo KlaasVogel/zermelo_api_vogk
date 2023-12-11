@@ -37,8 +37,8 @@ class Branch:
     leerlingen: list[Leerling] = field(default_factory=list)
     personeel: list[Medewerker] = field(default_factory=list)
     leerjaren: list[Leerjaar] = field(default_factory=list)
-    vakken: list[Vak] = field(default_factory=list)
-    groepen: list[Groep] = field(default_factory=list)
+    vakken: Vakken = field(default_factory=list)
+    groepen: Groepen = field(default_factory=list)
 
     def __post_init__(self):
         logger.info(f"*** loading branch: {self.name} ***")

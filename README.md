@@ -1,6 +1,10 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+# V0.2.8
+ - changed definition of Vakken and Groepen in Branch
+ - added Vakken & Vak to __init__.py 
+
 # V0.2.7
  - added response as data in getData on wrong output
 
