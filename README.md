@@ -1,8 +1,11 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+# V0.2.7
+ - added response as data in getData on wrong output
+
 # V0.2.6
- removed linebreaks from logger.write()
+ - removed linebreaks from logger.write()
 
 # V0.2.5
  - trying getting extra data for each appointment from user
