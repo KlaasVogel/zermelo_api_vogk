@@ -69,19 +69,26 @@ class Appointment:
         return from_zermelo_dict(cls, data[0])
 
 
+def get_appointments(query: str) -> list[Appointment]:
+    status, data = zermelo.getData(query)
+    if status != 200:
+        raise Exception(data)
+    return [from_zermelo_dict(Appointment, row) for row in data]
+
+
 def get_user_appointments(user: int | str, **kwargs) -> list[Appointment]:
-    result = []
     query = f"appointments/?user={user}"
     for key, val in kwargs.items():
         query += f"&{key}={val}"
     logger.debug(query)
-    status, data = zermelo.getData(query)
-    if status != 200:
-        raise Exception(data)
-    for row in data:
-        result.append(from_zermelo_dict(Appointment, row))
-    logger.debug(result)
-    return result
+    return get_appointments(query)
+
+
+def get_department_updates(id: int, **kwargs) -> list[Appointment]:
+    query = f"appointments/?containsStudentsFromGroupInDepartment={id}"
+    for key, val in kwargs.items():
+        query += f"&{key}={val}"
+    return get_appointments(query)
 
     # if len(roosterdata):
     #     logger.debug(f"rooster: {roosterdata}")

@@ -7,6 +7,8 @@ A small module to create a Zermelo accesstoken and put some data from Zermelo in
 
 # V0.2.7
  - added response as data in getData on wrong output
+ - refactoring of Appointments
+  * added function: get_department_updates [doesn't work atm :( ]
 
 # V0.2.6
  - removed linebreaks from logger.write()
