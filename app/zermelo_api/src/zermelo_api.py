@@ -61,7 +61,7 @@ class ZermeloAPI:
         else:
             return " ".join([row["firstName"], row["prefix"], row["lastName"]])
 
-    def getData(self, task, from_id=False) -> tuple[int, list[dict]]:
+    def getData(self, task, from_id=False) -> tuple[int, list[dict] | str]:
         result = (500, [])
         try:
             request = (
@@ -78,9 +78,9 @@ class ZermeloAPI:
                     logger.debug("    **** JSON OK ****")
                 else:
                     logger.debug(
-                        f"oeps, geen juiste response: {task}: {json_response['response']}"
+                        f"oeps, geen juiste response: {task} - {json_response['response']}"
                     )
-                    result = (json_status, [])
+                    result = (json_status, json_response["response"])
             else:
                 logger.error("JSON - response is leeg")
         except Exception as e:
