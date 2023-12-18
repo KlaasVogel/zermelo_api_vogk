@@ -60,13 +60,14 @@ class Appointment:
     onlineTeachers: list[str] = field(default_factory=list)
     students: list[str] = field(default_factory=list)
 
-    @classmethod
-    def get_appointment(cls, id: int):
-        query = f"appointments/{id}"
-        status, data = zermelo.getData(query, from_id=True)
-        if status != 200:
-            raise Exception(data)
-        return from_zermelo_dict(cls, data[0])
+    # doesn't work (not enough rights)
+    # @classmethod
+    # def get_appointment(cls, id: int):
+    #     query = f"appointments/{id}"
+    #     status, data = zermelo.getData(query, from_id=True)
+    #     if status != 200:
+    #         raise Exception(data)
+    #     return from_zermelo_dict(cls, data[0])
 
 
 def get_appointments(query: str) -> list[Appointment]:
@@ -89,68 +90,3 @@ def get_department_updates(id: int, **kwargs) -> list[Appointment]:
     for key, val in kwargs.items():
         query += f"&{key}={val}"
     return get_appointments(query)
-
-    # if len(roosterdata):
-    #     logger.debug(f"rooster: {roosterdata}")
-    #     for row in roosterdata:
-    #         if row["valid"] and not row["cancelled"]:
-    #             type = row["type"]
-    #             id = row["id"]
-    #             locations = (
-    #                 row["locations"]
-    #                 if ("locations" in row and len(row["locations"]))
-    #                 else ["onbekend"]
-    #             )
-    #             subjects = row["subjects"] if "subjects" in row else ["onbekend"]
-    #             leraren = (
-    #                 row["teachers"]
-    #                 if ("teachers" in row and len(row["teachers"]))
-    #                 else ["onbekend"]
-    #             )
-    #             instance = (
-    #                 row["appointmentInstance"]
-    #                 if "appointmentInstance" in row
-    #                 else 0
-    #             )
-    #             lesgroepen = (
-    #                 row["choosableInDepartmentCodes"]
-    #                 if "choosableInDepartmentCodes" in row
-    #                 else []
-    #             )
-    #             ll_aantal = (
-    #                 row["expectedStudentCount"]
-    #                 if "expectedStudentCount" in row
-    #                 else 0
-    #             )
-    #             vakken = ", ".join(subjects)
-    #             lokaal = ", ".join(locations)
-    #             opmerking = row["remark"]
-    #             start = row["start"]
-    #             eind = row["end"]
-    #             # starttijd= datetime.fromtimestamp(start)
-    #             # eindtijd= datetime.fromtimestamp(eind)
-    #             # starttxt=starttijd.strftime("%H:%M")
-    #             # eindtxt=eindtijd.strftime("%H:%M")
-    #             # dagnr=int(starttijd.strftime("%w"))
-    #             # dagtxt=dagen[dagnr]
-    #             # dag=int(starttijd.strftime("%d"))
-    #             # maandnr=int(starttijd.strftime("%m"))
-    #             # maand=maanden[maandnr]
-    #             result.append(
-    #                 {
-    #                     "id": id,
-    #                     "start": start,
-    #                     "eind": eind,
-    #                     "vak": vakken,
-    #                     "leraren": leraren,
-    #                     "ll_aantal": ll_aantal,
-    #                     "lokaal": lokaal,
-    #                     "type": type,
-    #                     "lesgroepen": lesgroepen,
-    #                     "opmerking": opmerking,
-    #                     "instance": instance,
-    #                 }
-    #             )
-    #     # print(result)
-    # logger.debug(f"result: {result}")
-    # return result

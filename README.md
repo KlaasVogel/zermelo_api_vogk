@@ -4,6 +4,7 @@ A small module to create a Zermelo accesstoken and put some data from Zermelo in
 # V0.2.9
  - removed dependency of Groepen in Vakken (ot used)
  - added getName to Vak (Vakken)
+ - start cleanup code
 
 # V0.2.8
  - changed definition of Vakken and Groepen in Branch
