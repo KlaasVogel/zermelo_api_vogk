@@ -46,7 +46,7 @@ class Branch:
         self.personeel = Personeel(self.schoolInSchoolYear)
         self.leerjaren = Leerjaren(self.schoolInSchoolYear)
         self.groepen = Groepen(self.schoolInSchoolYear)
-        self.vakken = Vakken(self.schoolInSchoolYear, self.groepen)
+        self.vakken = Vakken(self.schoolInSchoolYear)
 
     def find_lesgroepen(self) -> Lesgroepen | bool:
         if self.leerlingen and self.personeel:

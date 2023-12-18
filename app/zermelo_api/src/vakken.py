@@ -28,16 +28,26 @@ class Vak:
     subjectName: str
     sectionOfBranchAbbreviation: str
 
+    def getName(self) -> str:
+        if "/" in self.subjectName:
+            logger.debug(f"old name: {self.subjectName}")
+            parts = self.subjectName.split("/")
+            frontpart = parts[0]
+            nameparts = frontpart.split(" ")
+            nameparts.pop(-1)
+            name = " ".join(nameparts)
+            logger.debug(f"new name: {name}")
+            return name.strip()
+        return self.subjectName.strip()
+
 
 @dataclass
 class Vakken(ZermeloCollection, list[Vak]):
     schoolinschoolyear: InitVar
-    groepen: InitVar
 
-    def __post_init__(self, schoolinschoolyear: int, groepen: Groepen):
+    def __post_init__(self, schoolinschoolyear: int):
         query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
         self.load_collection(query, Vak)
-        # [vak.find_groepen(groepen) for vak in self]
 
     def get_leerjaar_vakken(self, leerjaar_id: int) -> list[Vak]:
         return [vak for vak in self if vak.departmentOfBranch == leerjaar_id]
