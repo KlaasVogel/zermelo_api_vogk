@@ -16,9 +16,9 @@ def createLesgroepNaam(vak: Vak, groep: Groep) -> str:
     leerjaar, groepnaam = groep.extendedName.split(".")
     jaarnaam = leerjaar[2:].upper()
     if vak.subjectCode in groepnaam:
-        return f"{jaarnaam}{groepnaam}"
+        return f"{jaarnaam}.{groepnaam}"
     else:
-        return f"{jaarnaam}{vak.subjectCode}{groepnaam[-1]}"
+        return f"{jaarnaam}.{vak.subjectCode}{groepnaam[-1]}"
 
 
 def find_groepen(vak: Vak, groepen: Groepen) -> list[Groep]:
@@ -59,16 +59,18 @@ class Les:
     teachers: list[str]
     students: list[str]
     subjects: list[str]
-    groups: list[int]
+    groups: list[str]
     groupsInDepartments: list[int]
     choosableInDepartmentCodes: list[str]
     valid: bool
     cancelled: bool
 
-    def filter(self) -> bool:
+    def filter(self, name: str) -> bool:
         if self.cancelled:
             return False
         if not self.valid:
+            return False
+        if name not in self.groups:
             return False
         if len(self.students) > 40:
             logger.debug("groep te groot")
@@ -77,7 +79,7 @@ class Les:
 
 
 def get_vak_data(
-    id: int, code: str, start, eind
+    id: int, code: str, groupName: str, start, eind
 ) -> tuple[list[int], list[str], list[str]]:
     query = f"appointments/?containsStudentsFromGroupInDepartment={id}&subjects={code}&type=lesson&start={start}&end={eind}&fields=appointmentInstance,id,teachers,students,subjects,groups,groupsInDepartments,choosableInDepartmentCodes,valid,cancelled"
     vakdata = zermelo.load_query(query)
@@ -88,7 +90,7 @@ def get_vak_data(
     docenten = []
     grp_namen = []
     lessen = [Les(**row) for row in reversed(vakdata) if row]
-    for les in [les for les in lessen if les.filter()]:
+    for les in [les for les in lessen if les.filter(groupName)]:
         if len(les.groups) > 1:
             if not grp_namen and not grp_bck or len(les.groups) < len(grp_bck):
                 logger.debug("meerdere groepen")
@@ -123,11 +125,14 @@ def find_deelnemers(
 ) -> tuple[list[int], list[str], list[str]] | bool:
     date = get_date()
     try:
+        logger.debug(groep)
         for x in [0, -1, -2, 1, 2, 3]:
             dweek = x * 4
             starttijd = int(delta_week(date, dweek).timestamp())
             eindtijd = int(delta_week(date, dweek + 4).timestamp())
-            data = get_vak_data(groep.id, vak.subjectCode, starttijd, eindtijd)
+            data = get_vak_data(
+                groep.id, vak.subjectCode, groep.extendedName, starttijd, eindtijd
+            )
             leerlingen, docenten, groep_namen = data
             if len(leerlingen) and len(docenten):
                 logger.debug(f"found for {groep}")
