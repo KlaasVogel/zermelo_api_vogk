@@ -1,6 +1,10 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+# V0.2.14
+ - debug on for bugfixing
+ - added extra debug log for filter in lesgroepen
+
 # V0.2.13
  - New bug: loading of stamgroepen as lesgroep is broken!
  - need to update/edit filter in lesgroepen
