@@ -4,6 +4,7 @@ A small module to create a Zermelo accesstoken and put some data from Zermelo in
 # V0.2.14
  - debug on for bugfixing
  - added extra debug log for filter in lesgroepen
+ - edit filter to find second part of groupname in les.groups
 
 # V0.2.13
  - New bug: loading of stamgroepen as lesgroep is broken!

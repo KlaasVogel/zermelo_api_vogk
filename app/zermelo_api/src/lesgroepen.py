@@ -70,11 +70,11 @@ class Les:
             return False
         if not self.valid:
             return False
-        if name not in self.groups:
-            logger.debug(f"{name} not in {self}")
-            return False
         if len(self.students) > 40:
             logger.debug("groep te groot")
+            return False
+        if not any([name.split(".")[-1] in group for group in self.groups]):
+            logger.debug(f"{name} not in {self}")
             return False
         return True
 
