@@ -9,7 +9,7 @@ from .zermelo_api import zermelo, from_zermelo_dict
 
 # from typing import Tuple
 
-logger = makeLogger("LESGROEP", DEBUG)
+logger = makeLogger("LESGROEP")
 
 
 def createLesgroepNaam(vak: Vak, groep: Groep) -> str:

@@ -1,6 +1,9 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+# V0.2.15
+ - diabled debug mode
+
 # V0.2.14
  - debug on for bugfixing
  - added extra debug log for filter in lesgroepen
