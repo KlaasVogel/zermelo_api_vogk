@@ -9,7 +9,7 @@ from .zermelo_api import zermelo, from_zermelo_dict
 
 # from typing import Tuple
 
-logger = makeLogger("LESGROEP")
+logger = makeLogger("LESGROEP", DEBUG)
 
 
 def createLesgroepNaam(vak: Vak, groep: Groep) -> str:
@@ -71,6 +71,7 @@ class Les:
         if not self.valid:
             return False
         if name not in self.groups:
+            logger.debug(f"{name} not in {self}")
             return False
         if len(self.students) > 40:
             logger.debug("groep te groot")
