@@ -24,15 +24,15 @@ class MyLogger(Logger):
 def makeLogger(name: str = None, LOG_LEVEL: int = INFO, filename=FILE) -> MyLogger:
     logger = logging.getLogger(name)
     logger.setLevel(LOG_LEVEL)
-    # if not path.isdir(FOLDER):
-    #     mkdir(FOLDER)
-    # filename = path.join(FOLDER, f"{filename}.log")
+    if not path.isdir(FOLDER):
+        mkdir(FOLDER)
+    filename = path.join(FOLDER, f"{filename}.log")
 
     # create console handler and set level to debug
-    # handler = logging.handlers.TimedRotatingFileHandler(
-    #     filename, when="W4", backupCount=3, encoding="utf-8"
-    # )
-    handler = logging.StreamHandler()
+    handler = logging.handlers.TimedRotatingFileHandler(
+        filename, when="W4", backupCount=3, encoding="utf-8"
+    )
+    # handler = logging.StreamHandler()
     handler.setLevel(LOG_LEVEL)
 
     formatter = logging.Formatter(

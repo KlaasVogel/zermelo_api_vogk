@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="zermelo_api_vogk",
-    version="0.2.16",
+    version="0.2.17",
     description="A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses",
     package_dir={"": "app"},
     packages=find_packages(where="app"),

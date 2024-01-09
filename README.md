@@ -1,6 +1,9 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+# V0.2.17
+ - re-enabled logger
+
 # V0.2.16
  - found bug when running as daemon, probably: logger.
  - try without output to file
