@@ -96,4 +96,5 @@ class Vakken(ZermeloCollection, list[Vak]):
     def get_vak_docent_lokaal(self, id_branch: int, start: int, eind: int):
         vakdata = DataVakDocLoks(id_branch, start, eind)
         [logger.info(vak) for vak in self]
+        [logger.info(vak) for vak in vakdata]
         # return VakDocLoks(self, vakdata)
