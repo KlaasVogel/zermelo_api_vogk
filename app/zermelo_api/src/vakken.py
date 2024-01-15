@@ -48,13 +48,8 @@ class VakDocLokData:
     locationsOfBranch: list[str]  # lokalen
 
 
-@dataclass
 class DataVakDocLoks(ZermeloCollection, list[VakDocLokData]):
-    id_branch: InitVar
-    start: InitVar
-    eind: InitVar
-
-    def __post_init__(self, id_branch: int, start: int, eind: int):
+    def __init__(self, id_branch: int, start: int, eind: int):
         query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,subjects,teachers&start={start}&end={eind}"
         self.load_collection(query, VakDocLokData)
 
