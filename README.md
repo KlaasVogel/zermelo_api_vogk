@@ -4,6 +4,7 @@ A small module to create a Zermelo accesstoken and put some data from Zermelo in
 # V0.3.5 -> V0.3.6
  - added lokalen, removed debug from zermelo_api
  - added vakdocloks
+ - bugfix: added lokalen to dataclass of branch
 
 # V0.3.1 -> 0.3.4
  - start adding function to get teachers and locations for all subjects in a certain timespan.
