@@ -4,7 +4,7 @@ import json
 import requests
 import inspect
 
-logger = makeLogger("ZermeloAPI", DEBUG)
+logger = makeLogger("ZermeloAPI")
 
 ZERMELO_NAME = "carmelhengelo"
 
