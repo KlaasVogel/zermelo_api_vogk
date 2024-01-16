@@ -1,10 +1,11 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V0.3.5 -> V0.3.6
+# V0.3.5 -> V0.3.8
  - added lokalen, removed debug from zermelo_api
  - added vakdocloks
  - bugfix: added lokalen to dataclass of branch
+ - bugfix: subject in data vakdocloks is str not int
 
 # V0.3.1 -> 0.3.4
  - start adding function to get teachers and locations for all subjects in a certain timespan.
