@@ -1,6 +1,9 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+# V0.3.9
+ - change lesgroepnaam
+
 # V0.3.5 -> V0.3.8
  - added lokalen, removed debug from zermelo_api
  - added vakdocloks
