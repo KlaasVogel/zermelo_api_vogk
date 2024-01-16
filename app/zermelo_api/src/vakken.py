@@ -1,6 +1,5 @@
 from .zermelo_api import ZermeloCollection, zermelo
 from .logger import makeLogger, DEBUG
-from .groepen import Groepen, Groep
 from dataclasses import dataclass, InitVar, field
 
 logger = makeLogger("VAKKEN")
@@ -42,37 +41,6 @@ class Vak:
 
 
 @dataclass
-class VakDocLokData:
-    subjects: list[str]
-    teachers: list[str]
-    locationsOfBranch: list[str]  # lokalen
-
-
-class DataVakDocLoks(ZermeloCollection, list[VakDocLokData]):
-    def __init__(self, id_branch: int, start: int, eind: int):
-        query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,subjects,teachers&start={start}&end={eind}"
-        self.load_collection(query, VakDocLokData)
-
-
-@dataclass
-class VakDocLok:
-    vak: Vak
-    docenten: list[str] = field(default_factory=list)
-    lokalen: list[str] = field(default_factory=list)
-
-
-@dataclass
-class VakDocLoks(list[VakDocLok]):
-    vakken: InitVar
-    vakdata: InitVar
-
-    def __post_init__(self, vakken: list[Vak], vakdata: DataVakDocLoks):
-        for data in vakdata:
-            for vaknaam in data.subjects:
-                vak = vakken.get(vaknaam)
-
-
-@dataclass
 class Vakken(ZermeloCollection, list[Vak]):
     schoolinschoolyear: InitVar
 
@@ -85,11 +53,12 @@ class Vakken(ZermeloCollection, list[Vak]):
             if vak.subjectCode == vaknaam:
                 return vak
 
+    def get_subject(self, subject: int) -> tuple[str, str]:
+        """returns (code, naam)"""
+        for vak in self:
+            if vak.subject == subject:
+                return (vak.subjectCode, vak.getName())
+        return ("onbekend", "Onbekend")
+
     def get_leerjaar_vakken(self, leerjaar_id: int) -> list[Vak]:
         return [vak for vak in self if vak.departmentOfBranch == leerjaar_id]
-
-    def get_vak_docent_lokaal(self, id_branch: int, start: int, eind: int):
-        vakdata = DataVakDocLoks(id_branch, start, eind)
-        [logger.info(vak) for vak in self]
-        [logger.info(vak) for vak in vakdata]
-        # return VakDocLoks(self, vakdata)

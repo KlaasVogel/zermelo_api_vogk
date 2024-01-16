@@ -6,6 +6,8 @@ from .leerjaren import Leerjaren, Leerjaar
 from .groepen import Groep, Groepen
 from .lesgroepen import Lesgroepen, Lesgroep
 from .vakken import Vakken, Vak
+from .lokalen import Lokalen, Lokaal
+from .vaklokdoc import get_vakdocloks, VakDocLoks
 from dataclasses import dataclass, InitVar, field
 
 # branch is roughly translated to 'afdeling' in Dutch
@@ -47,6 +49,7 @@ class Branch:
         self.leerjaren = Leerjaren(self.schoolInSchoolYear)
         self.groepen = Groepen(self.schoolInSchoolYear)
         self.vakken = Vakken(self.schoolInSchoolYear)
+        self.lokalen = Lokalen(self.schoolInSchoolYear)
 
     def find_lesgroepen(self) -> Lesgroepen | bool:
         if self.leerlingen and self.personeel:
@@ -58,6 +61,16 @@ class Branch:
                 self.personeel,
             )
         return False
+
+    def get_vak_doc_loks(self, start: int, eind: int) -> VakDocLoks:
+        return get_vakdocloks(
+            self.id,
+            self.vakken,
+            self.personeel,
+            self.lokalen,
+            start,
+            eind,
+        )
 
 
 @dataclass
