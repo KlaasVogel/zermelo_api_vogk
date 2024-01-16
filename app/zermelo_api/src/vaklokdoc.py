@@ -61,7 +61,7 @@ def get_vakdocloks(
         for subject in data.subjects:
             vakdoclok = vakdocloks.get(subject)
             if not vakdoclok:
-                code, naam = subs.get_subject(subject)
+                code, naam = subs.get_subject(int(subject))
                 vakdoclok = vakdocloks.add(subject, code, naam)
             vakdoclok.add_docs([docs.get(doc) for doc in data.teachers])
             vakdoclok.add_loks([loks.get(lok) for lok in data.locationsOfBranch])
