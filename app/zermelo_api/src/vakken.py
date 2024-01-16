@@ -53,12 +53,12 @@ class Vakken(ZermeloCollection, list[Vak]):
             if vak.subjectCode == vaknaam:
                 return vak
 
-    def get_subject(self, subject: int) -> tuple[str, str]:
+    def get_subject(self, subject: str) -> tuple[int, str]:
         """returns (code, naam)"""
         for vak in self:
-            if vak.subject == subject:
-                return (vak.subjectCode, vak.getName())
-        return ("onbekend", "Onbekend")
+            if vak.subjectCode == subject:
+                return (vak.subject, vak.getName())
+        return (0, "Onbekend")
 
     def get_leerjaar_vakken(self, leerjaar_id: int) -> list[Vak]:
         return [vak for vak in self if vak.departmentOfBranch == leerjaar_id]

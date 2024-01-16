@@ -8,7 +8,7 @@ from dataclasses import dataclass, InitVar, field
 
 @dataclass
 class VakDocLokData:
-    subjects: list[int]
+    subjects: list[str]
     teachers: list[str]
     locationsOfBranch: list[int]  # lokalen
 
@@ -41,8 +41,10 @@ class VakDocLok:
 @dataclass
 class VakDocLoks(list[VakDocLok]):
     def add(self, id, code, naam) -> VakDocLok:
-        vakdoclok = VakDocLok(id, code, naam)
-        self.append(vakdoclok)
+        vakdoclok = self.get(id)
+        if not vakdoclok:
+            vakdoclok = VakDocLok(id, code, naam)
+            self.append(vakdoclok)
         return vakdoclok
 
     def get(self, id: int) -> VakDocLok | bool:
@@ -59,10 +61,8 @@ def get_vakdocloks(
     vakdocloks = VakDocLoks()
     for data in vakdata:
         for subject in data.subjects:
-            vakdoclok = vakdocloks.get(subject)
-            if not vakdoclok:
-                code, naam = subs.get_subject(int(subject))
-                vakdoclok = vakdocloks.add(subject, code, naam)
+            id, naam = subs.get_subject(subject)
+            vakdoclok = vakdocloks.add(id, subject, naam)
             vakdoclok.add_docs([docs.get(doc) for doc in data.teachers])
             vakdoclok.add_loks([loks.get(lok) for lok in data.locationsOfBranch])
     return vakdocloks
