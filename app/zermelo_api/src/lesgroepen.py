@@ -16,9 +16,9 @@ def createLesgroepNaam(vak: Vak, groep: Groep) -> str:
     leerjaar, groepnaam = groep.extendedName.split(".")
     jaarnaam = leerjaar[2:].upper()
     if vak.subjectCode in groepnaam:
-        return f"{jaarnaam}.{groepnaam}"
+        return f"{jaarnaam}{groepnaam}"
     else:
-        return f"{jaarnaam}.{vak.subjectCode}{groepnaam[-1]}"
+        return f"{jaarnaam}{vak.subjectCode}{groepnaam[-1]}"
 
 
 def find_groepen(vak: Vak, groepen: Groepen) -> list[Groep]:
