@@ -7,7 +7,7 @@ from .groepen import Groep, Groepen
 from .lesgroepen import Lesgroepen, Lesgroep
 from .vakken import Vakken, Vak
 from .lokalen import Lokalen, Lokaal
-from .vaklokdoc import get_vakdocloks, VakDocLoks
+from .vakdoclok import get_vakdocloks, VakDocLoks
 from dataclasses import dataclass, InitVar, field
 
 # branch is roughly translated to 'afdeling' in Dutch
@@ -64,14 +64,7 @@ class Branch:
         return False
 
     def get_vak_doc_loks(self, start: int, eind: int) -> VakDocLoks:
-        return get_vakdocloks(
-            self.id,
-            self.vakken,
-            self.personeel,
-            self.lokalen,
-            start,
-            eind,
-        )
+        return get_vakdocloks(self.id, start, eind)
 
 
 @dataclass
