@@ -7,3 +7,4 @@ from .src.leerjaren import Leerjaar, Leerjaren
 from .src.appointments import get_user_appointments, get_department_updates, Appointment
 from .src.vakken import Vakken, Vak
 from .src.lokalen import Lokalen, Lokaal
+from .src.vaklokdoc import VakDocLoks, VakDocLok
