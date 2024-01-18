@@ -22,18 +22,18 @@ class DataVakDocLoks(ZermeloCollection, list[VakDocLokData]):
 
 @dataclass
 class VakDocLok:
-    id: int
+    # id: int
     subjectCode: str
-    naam: str
+    # naam: str
     docenten: list[str] = field(default_factory=list)
     lokalen: list[int] = field(default_factory=list)
 
-    def add_docs(self, docenten: list[Medewerker]):
+    def add_docs(self, docenten: list[str]):
         for doc in docenten:
             if doc not in self.docenten:
                 self.docenten.append(doc)
 
-    def add_loks(self, lokalen: list[Lokaal]):
+    def add_loks(self, lokalen: list[int]):
         for lok in lokalen:
             if lok not in self.lokalen:
                 self.lokalen.append(lok)
@@ -41,30 +41,28 @@ class VakDocLok:
 
 @dataclass
 class VakDocLoks(list[VakDocLok]):
-    def add(self, id, code, naam) -> VakDocLok:
-        vakdoclok = self.get(id)
+    def add(self, code) -> VakDocLok:
+        vakdoclok = self.get(code)
         if not vakdoclok:
-            vakdoclok = VakDocLok(id, code, naam)
+            vakdoclok = VakDocLok(code)
             self.append(vakdoclok)
         return vakdoclok
 
-    def get(self, id: int) -> VakDocLok | bool:
+    def get(self, code: str) -> VakDocLok | bool:
         for vakdoclok in self:
-            if vakdoclok.id == id:
+            if vakdoclok.subjectCode == code:
                 return vakdoclok
         return False
 
 
-def get_vakdocloks(
-    id_branch: int, subs: Vakken, docs: Personeel, loks: Lokalen, start: int, eind: int
-):
+def get_vakdocloks(id_branch: int, start: int, eind: int):
     vakdata = DataVakDocLoks(id_branch, start, eind)
     vakdocloks = VakDocLoks()
     for data in vakdata:
         print(data)
         for subject in data.subjects:
-            id, naam = subs.get_subject(subject)
-            vakdoclok = vakdocloks.add(id, subject, naam)
-            vakdoclok.add_docs([docs.get(doc) for doc in data.teachers])
-            vakdoclok.add_loks([loks.get(lok) for lok in data.locationsOfBranch])
+            # id, naam = subs.get_subject(subject)
+            vakdoclok = vakdocloks.add(subject)
+            vakdoclok.add_docs(data.teachers)
+            vakdoclok.add_loks(data.locationsOfBranch)
     return vakdocloks
