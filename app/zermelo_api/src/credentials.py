@@ -1,7 +1,7 @@
 from .config import getConfig
-from .logger import makeLogger, INFO, DEBUG
+import logging
 
-logger = makeLogger("creds", INFO)
+logger = logging.getLogger(__name__)
 
 
 class Credentials:

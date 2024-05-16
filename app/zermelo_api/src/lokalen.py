@@ -1,9 +1,8 @@
 from .zermelo_api import ZermeloCollection, zermelo
-from .logger import makeLogger, DEBUG
 from dataclasses import dataclass, InitVar, field
+import logging
 
-logger = makeLogger("LOKALEN")
-
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Lokaal:

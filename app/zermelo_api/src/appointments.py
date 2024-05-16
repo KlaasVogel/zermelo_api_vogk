@@ -1,9 +1,8 @@
 from .zermelo_api import zermelo, from_zermelo_dict
 from dataclasses import dataclass, InitVar, field
-from logger import makeLogger, DEBUG
+import logging
 
-logger = makeLogger("APPS")
-
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Appointment:

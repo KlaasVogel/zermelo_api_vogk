@@ -1,8 +1,8 @@
 from .zermelo_api import ZermeloCollection, zermelo
-from .logger import makeLogger, DEBUG
 from dataclasses import dataclass, InitVar, field
+import logging
 
-logger = makeLogger("VAKKEN")
+logger = logging.getLogger(__name__)
 
 
 @dataclass

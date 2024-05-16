@@ -9,12 +9,12 @@ from .vakken import Vakken, Vak
 from .lokalen import Lokalen, Lokaal
 from .vakdoclok import get_vakdocloks, VakDocLoks
 from dataclasses import dataclass, InitVar, field
+import logging
 
 # branch is roughly translated to 'afdeling' in Dutch
 # for readability kept as branch, might be changed in the future
 
-logger = makeLogger("BRANCH")
-
+logger = logging.getLogger(__name__)
 
 @dataclass
 class SchoolInSchoolYear:

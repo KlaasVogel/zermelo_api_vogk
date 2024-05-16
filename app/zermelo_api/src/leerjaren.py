@@ -1,10 +1,8 @@
 from .zermelo_api import ZermeloCollection
-from .logger import makeLogger
 from dataclasses import dataclass, InitVar
+import logging
 
-# Leerjaar is a rough dutch translation of department in Zermelo
-
-logger = makeLogger("Leerjaren")
+logger = logging.getLogger(__name__)
 
 
 def getLeerjaarNaam(string):

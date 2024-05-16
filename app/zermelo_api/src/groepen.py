@@ -1,8 +1,8 @@
 from .zermelo_api import ZermeloCollection, zermelo
-from .logger import makeLogger
 from dataclasses import dataclass, InitVar
+import logging
 
-logger = makeLogger("GROEPEN")
+logger = logging.getLogger(__name__)
 
 
 @dataclass

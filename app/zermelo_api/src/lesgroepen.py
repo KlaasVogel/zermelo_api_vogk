@@ -4,12 +4,10 @@ from .groepen import Groepen, Groep
 from .users import Leerlingen, Leerling, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
 from .time_utils import get_date, delta_week
-from .logger import makeLogger, DEBUG
 from .zermelo_api import zermelo, from_zermelo_dict
+import logging
 
-# from typing import Tuple
-
-logger = makeLogger("LESGROEP")
+logger = logging.getLogger(__name__)
 
 
 def createLesgroepNaam(vak: Vak, groep: Groep) -> str:
