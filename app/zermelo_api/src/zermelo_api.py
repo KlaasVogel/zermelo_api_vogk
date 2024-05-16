@@ -1,10 +1,10 @@
 from .credentials import Credentials
-from .logger import makeLogger, DEBUG, INFO
 import json
 import requests
 import inspect
+import logging
 
-logger = makeLogger("ZermeloAPI")
+logger = logging.getLogger(__name__)
 
 ZERMELO_NAME = "carmelhengelo"
 

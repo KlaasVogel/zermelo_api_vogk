@@ -1,8 +1,8 @@
 from .zermelo_api import ZermeloCollection, zermelo, from_zermelo_dict
-from .logger import makeLogger
 from dataclasses import dataclass, InitVar, field
+import logging
 
-logger = makeLogger("USERS")
+logger = logging.getLogger(__name__)
 
 
 @dataclass
