@@ -144,8 +144,8 @@ def find_deelnemers(
         if not len(leerlingen) or not len(docenten):
             logger.debug(f"geen deelnemers gevonden voor {groep}\n {vak}")
             return False
-    except Exception:
-        logger.trace()
+    except Exception as e:
+        logger.error(e)
         return False
 
 
