@@ -1,4 +1,3 @@
-from .logger import makeLogger
 from .zermelo_api import ZermeloCollection, zermelo, from_zermelo_dict
 from .time_utils import get_date, get_year, datetime
 from .users import Leerling, Leerlingen, Personeel, Medewerker
