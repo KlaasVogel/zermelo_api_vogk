@@ -1,7 +1,7 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V0.3.16
+# V0.3.17
  - better logging
 
 # V0.3.15
