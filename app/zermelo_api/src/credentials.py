@@ -16,7 +16,7 @@ class Credentials:
             data = self.file.load()
             self.token = data["token"]
         except Exception as e:
-            logger.trace()
+            logger.error(e)
         finally:
             logger.debug(f"token: {self.token}")
             return True if self.token else False

@@ -1,8 +1,9 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V0.3.17
+# V0.3.18
  - better logging
+ - removed trace
 
 # V0.3.15
  - changed vakdoclok from subjects to choosableindepartments

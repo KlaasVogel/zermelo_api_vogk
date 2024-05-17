@@ -43,7 +43,6 @@ class ZermeloAPI:
             self.getName()
             result = True
         except Exception as e:
-            logger.trace()
             logger.error(e)
         finally:
             return result
@@ -84,7 +83,7 @@ class ZermeloAPI:
             else:
                 logger.error("JSON - response is leeg")
         except Exception as e:
-            logger.trace()
+            logger.error(e)
         finally:
             return result
 
