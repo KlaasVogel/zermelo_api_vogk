@@ -1,7 +1,11 @@
-from zermelo_api import Branches, get_year
+from zermelo_api import Branches, loadAPI
 
-branches = Branches()
-for branch in branches:
-    print(branch)
-#     if branch.branch == "lg":
-#         branch.load_lesgroepen()
+
+async def main():
+    zermelo = loadAPI("carmelhengelo")
+    branches = Branches(zermelo)
+    await Branches._init("")
+    for branch in branches:
+        print(branch)
+    #     if branch.branch == "lg":
+    #         branch.load_lesgroepen()

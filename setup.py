@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="zermelo_api_vogk",
-    version="0.3.18",
+    version="1.0.1",
     description="A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses",
     package_dir={"": "app"},
     packages=find_packages(where="app"),
@@ -20,7 +20,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Operating System :: OS Independent",
     ],
-    install_requires=["requests"],
+    install_requires=["aiohttp"],
     extras_require={
         "dev": [],
     },

@@ -1,16 +1,43 @@
+from __future__ import annotations
 from .credentials import Credentials
-import json
-import requests
 import inspect
 import logging
+import asyncio
+import aiohttp
+import json
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-ZERMELO_NAME = "carmelhengelo"
+
+async def get_json(client: aiohttp.ClientSession, url: str):
+    async with client.get(url) as response:
+        assert response.status == 200
+        return await response.read()
+
+
+async def post_request(url: str, data: dict):
+    async with aiohttp.ClientSession() as session:
+        response = await session.post(
+            url="https://httpbin.org/post",
+            data={"key": "value"},
+            headers={"Content-Type": "application/json"},
+        )
+        return await response.json()
+
+
+async def loadAPI(name: str) -> ZermeloAPI:
+    zermelo = ZermeloAPI(name)
+    if not await zermelo.checkCreds():
+        with open("creds.ini") as f:
+            token = f.read()
+            await zermelo.add_token(token)
+    return zermelo
 
 
 class ZermeloAPI:
-    def __init__(self, school=ZERMELO_NAME):
+
+    def __init__(self, school: str):
         self.credentials = Credentials()
         self.zerurl = f"https://{school}.zportal.nl/api/v3/"
 
@@ -18,13 +45,14 @@ class ZermeloAPI:
         token = self.get_access_token(code)
         return self.add_token(token)
 
-    def get_access_token(self, code: str) -> str:
+    async def get_access_token(self, code: str) -> str:
         token = ""
         url = self.zerurl + "oauth/token"
-        # headers = {"Content-Type": "application/json"}
-        zerrequest = requests.post(
-            url, data={"grant_type": "authorization_code", "code": code}
-        )
+        data = {"grant_type": "authorization_code", "code": code}
+        response = await post_request(url, data)
+        logger.debug(response)
+        exit()
+
         if zerrequest.status_code == 200:
             data = json.loads(zerrequest.text)
             if "access_token" in data:
@@ -37,13 +65,13 @@ class ZermeloAPI:
         self.credentials.settoken(token)
         return self.checkCreds()
 
-    def checkCreds(self):
-        result = False
+    async def checkCreds(self):
         try:
             self.getName()
             result = True
         except Exception as e:
             logger.error(e)
+            result = False
         finally:
             return result
 
@@ -60,36 +88,39 @@ class ZermeloAPI:
         else:
             return " ".join([row["firstName"], row["prefix"], row["lastName"]])
 
-    def getData(self, task, from_id=False) -> tuple[int, list[dict] | str]:
-        result = (500, [])
-        try:
-            request = (
-                self.zerurl + task + f"?access_token={self.credentials.token}"
-                if from_id
-                else self.zerurl + task + f"&access_token={self.credentials.token}"
-            )
-            logger.debug(request)
-            json_response = requests.get(request).json()
-            if json_response:
-                json_status = json_response["response"]["status"]
-                if json_status == 200:
-                    result = (200, json_response["response"]["data"])
-                    logger.debug("    **** JSON OK ****")
-                else:
-                    logger.debug(
-                        f"oeps, geen juiste response: {task} - {json_response['response']}"
-                    )
-                    result = (json_status, json_response["response"])
-            else:
-                logger.error("JSON - response is leeg")
-        except Exception as e:
-            logger.error(e)
-        finally:
-            return result
+    async def getData(self, task, from_id=False) -> list[dict] | str:
+        request = (
+            self.zerurl + task + f"?access_token={self.credentials.token}"
+            if from_id
+            else self.zerurl + task + f"&access_token={self.credentials.token}"
+        )
+        logger.debug(request)
+        async with aiohttp.ClientSession() as client:
+            data1 = await get_json(client, request)
+            jn = json.loads(data1.decode("utf-8"))
+            logger.info(f"json: {jn}")
 
-    def load_query(self, query: str) -> list[dict]:
+        #     json_response = requests.get(request).json()
+        #     if json_response:
+        #         json_status = json_response["response"]["status"]
+        #         if json_status == 200:
+        #             result = (200, json_response["response"]["data"])
+        #             logger.debug("    **** JSON OK ****")
+        #         else:
+        #             logger.debug(
+        #                 f"oeps, geen juiste response: {task} - {json_response['response']}"
+        #             )
+        #             result = (json_status, json_response["response"])
+        #     else:
+        #         logger.error("JSON - response is leeg")
+        # except Exception as e:
+        #     logger.error(e)
+        # finally:
+        #     return result
+
+    async def load_query(self, query: str) -> list[dict]:
         try:
-            status, data = self.getData(query)
+            status, data = await self.getData(query)
             if status != 200:
                 raise Exception(f"Error loading data {status}")
             if not data:
@@ -98,14 +129,6 @@ class ZermeloAPI:
             logger.debug(e)
             data = []
         return data
-
-
-zermelo = ZermeloAPI()
-
-if not zermelo.checkCreds():
-    with open("creds.ini") as f:
-        token = f.read()
-        zermelo.add_token(token)
 
 
 def from_zermelo_dict(cls, data: dict, *args, **kwargs):
@@ -121,13 +144,16 @@ def from_zermelo_dict(cls, data: dict, *args, **kwargs):
     )
 
 
-class ZermeloCollection:
-    def load_collection(self: list, query: str, type: object) -> None:
-        data = zermelo.load_query(query)
-        for row in data:
-            self.append(from_zermelo_dict(type, row))
+@dataclass
+class ZermeloCollection(list):
+    zermelo: ZermeloAPI
 
-    def test(self: list, query: str):
-        data = zermelo.load_query(query)
+    async def load_collection(self, query: str, type: object, *args, **kwargs) -> None:
+        data = await self.zermelo.load_query(query)
         for row in data:
-            logger.info(f"test: {row}")
+            self.append(from_zermelo_dict(type, row, *args, **kwargs))
+
+    # def test(self, query: str):
+    #     data = self.zermelo.load_query(query)
+    #     for row in data:
+    #         logger.info(f"test: {row}")

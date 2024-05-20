@@ -1,4 +1,4 @@
-from .zermelo_api import ZermeloCollection, zermelo, from_zermelo_dict
+from .zermelo_api import ZermeloCollection, ZermeloAPI, from_zermelo_dict
 from .time_utils import get_date, get_year, datetime
 from .users import Leerling, Leerlingen, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
@@ -8,6 +8,7 @@ from .vakken import Vakken, Vak
 from .lokalen import Lokalen, Lokaal
 from .vakdoclok import get_vakdocloks, VakDocLoks
 from dataclasses import dataclass, InitVar, field
+import asyncio
 import logging
 
 # branch is roughly translated to 'afdeling' in Dutch
@@ -29,27 +30,33 @@ class SchoolInSchoolYear:
 
 @dataclass
 class Branch:
+    zermelo: InitVar
     id: int
     schoolInSchoolYear: int
     branch: str
     name: str
     schoolYear: int
     date: datetime = datetime.now()
-    leerlingen: list[Leerling] = field(default_factory=list)
-    personeel: list[Medewerker] = field(default_factory=list)
-    leerjaren: list[Leerjaar] = field(default_factory=list)
+    leerlingen: Leerlingen = field(default_factory=list)
+    personeel: Personeel = field(default_factory=list)
+    leerjaren: Leerjaren = field(default_factory=list)
     vakken: Vakken = field(default_factory=list)
     groepen: Groepen = field(default_factory=list)
     lokalen: Lokalen = field(default_factory=list)
 
-    def __post_init__(self):
+    def __post_init__(self, zermelo: ZermeloAPI):
         logger.info(f"*** loading branch: {self.name} ***")
-        self.leerlingen = Leerlingen(self.schoolInSchoolYear)
-        self.personeel = Personeel(self.schoolInSchoolYear)
-        self.leerjaren = Leerjaren(self.schoolInSchoolYear)
-        self.groepen = Groepen(self.schoolInSchoolYear)
-        self.vakken = Vakken(self.schoolInSchoolYear)
-        self.lokalen = Lokalen(self.schoolInSchoolYear)
+        self.leerlingen = Leerlingen(zermelo)
+        self.personeel = Personeel(zermelo)
+        self.leerjaren = Leerjaren(zermelo)
+        self.groepen = Groepen(zermelo)
+        self.vakken = Vakken(zermelo)
+        self.lokalen = Lokalen(zermelo)
+
+    async def _init(self):
+        attrs = ["leerlingen", "personeel", "leerjaren", "groepen", "vakken", "lokalen"]
+        id = self.schoolInSchoolYear
+        await asyncio.gather(*[getattr(self, name)._init(id) for name in attrs])
 
     def find_lesgroepen(self) -> Lesgroepen | bool:
         if self.leerlingen and self.personeel:
@@ -66,23 +73,22 @@ class Branch:
         return get_vakdocloks(self.id, start, eind)
 
 
-@dataclass
 class Branches(ZermeloCollection, list[Branch]):
-    datestring: InitVar = ""
 
-    def __post_init__(self, datestring):
+    async def _init(self, datestring):
         logger.debug("init branches")
         date = get_date(datestring)
         year = get_year(datestring)
         logger.debug(year)
         query = f"schoolsinschoolyears/?year={year}&archived=False"
-        data = zermelo.load_query(query)
+        data = await self.zermelo.load_query(query)
+
         for schoolrow in data:
             school = from_zermelo_dict(SchoolInSchoolYear, schoolrow)
             query = f"branchesofschools/?schoolInSchoolYear={school.id}"
-            self.load_collection(query, Branch)
-        for branch in self:
-            branch.date = date
+            # self.load_collection(query, Branch, self.zermelo)
+        # for branch in self:
+        #     branch.date = date
 
     def __str__(self):
         return "Branches(" + ", ".join([br.name for br in self]) + ")"

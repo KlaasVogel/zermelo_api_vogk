@@ -86,11 +86,10 @@ class Leerling(User):
 
 @dataclass
 class Leerlingen(ZermeloCollection, Users, list[Leerling]):
-    schoolinschoolyear: InitVar
 
-    def __init__(self, schoolinschoolyear: int):
+    async def _init(self, schoolinschoolyear: int):
         query = f"users?schoolInSchoolYear={schoolinschoolyear}&isStudent=true"
-        data = zermelo.load_query(query)
+        data = await self.zermelo.load_query(query)
         if data:
             self.load_leerlingen(data)
 
@@ -123,7 +122,7 @@ class Medewerker(User):
 class Personeel(ZermeloCollection, Users, list[Medewerker]):
     schoolinschoolyear: InitVar
 
-    def __init__(self, schoolinschoolyear: int):
+    def __post_init__(self, schoolinschoolyear: int):
         query = f"users?schoolInSchoolYear={schoolinschoolyear}&isEmployee=true"
         self.load_collection(query, Medewerker)
 
