@@ -1,30 +1,11 @@
 from __future__ import annotations
 from .credentials import Credentials
-import inspect
-import logging
-import asyncio
-import aiohttp
+from .io_json import get_json, post_request
 import json
-from dataclasses import dataclass
+import logging
 
 logger = logging.getLogger(__name__)
-
-
-async def get_json(client: aiohttp.ClientSession, url: str):
-    async with client.get(url) as response:
-        assert response.status == 200
-        return await response.read()
-
-
-async def post_request(url: str, data: dict):
-    async with aiohttp.ClientSession() as session:
-        response = await session.post(
-            url="https://httpbin.org/post",
-            data={"key": "value"},
-            headers={"Content-Type": "application/json"},
-        )
-        return await response.json()
-
+logger.setLevel(logging.DEBUG)
 
 async def loadAPI(name: str) -> ZermeloAPI:
     zermelo = ZermeloAPI(name)
@@ -36,7 +17,6 @@ async def loadAPI(name: str) -> ZermeloAPI:
 
 
 class ZermeloAPI:
-
     def __init__(self, school: str):
         self.credentials = Credentials()
         self.zerurl = f"https://{school}.zportal.nl/api/v3/"
@@ -67,7 +47,7 @@ class ZermeloAPI:
 
     async def checkCreds(self):
         try:
-            self.getName()
+            await self.getName()
             result = True
         except Exception as e:
             logger.error(e)
@@ -75,10 +55,10 @@ class ZermeloAPI:
         finally:
             return result
 
-    def getName(self):
+    async def getName(self):
         if not self.credentials.token:
             raise Exception("No Token loaded!")
-        status, data = self.getData("users/~me", True)
+        status, data = await self.getData("users/~me", True)
         if status != 200 or not len(data):
             raise Exception("could not load user data with token")
         logger.debug(f"get name: {data[0]}")
@@ -88,72 +68,43 @@ class ZermeloAPI:
         else:
             return " ".join([row["firstName"], row["prefix"], row["lastName"]])
 
-    async def getData(self, task, from_id=False) -> list[dict] | str:
+    async def getData(self, task, from_id=False) -> tuple[int, list[dict] | str]:
+        result = (500, "unknown error")
         request = (
             self.zerurl + task + f"?access_token={self.credentials.token}"
             if from_id
             else self.zerurl + task + f"&access_token={self.credentials.token}"
         )
         logger.debug(request)
-        async with aiohttp.ClientSession() as client:
-            data1 = await get_json(client, request)
-            jn = json.loads(data1.decode("utf-8"))
-            logger.info(f"json: {jn}")
-
-        #     json_response = requests.get(request).json()
-        #     if json_response:
-        #         json_status = json_response["response"]["status"]
-        #         if json_status == 200:
-        #             result = (200, json_response["response"]["data"])
-        #             logger.debug("    **** JSON OK ****")
-        #         else:
-        #             logger.debug(
-        #                 f"oeps, geen juiste response: {task} - {json_response['response']}"
-        #             )
-        #             result = (json_status, json_response["response"])
-        #     else:
-        #         logger.error("JSON - response is leeg")
-        # except Exception as e:
-        #     logger.error(e)
-        # finally:
-        #     return result
+        try:
+            data1 = await get_json(request)
+            json_response = json.loads(data1.decode("utf-8"))
+            if json_response:
+                json_status = json_response["response"]["status"]
+                if json_status == 200:
+                    result = (200, json_response["response"]["data"])
+                    logger.debug("    **** JSON OK ****")
+                    logger.debug(result)
+                else:
+                    logger.debug(
+                        f"oeps, geen juiste response: {task} - {json_response['response']}"
+                    )
+                    result = (json_status, json_response["response"])
+            else:
+                logger.error("JSON - response is leeg")
+        except Exception as e:
+            logger.error(e)
+        finally:
+            return result
 
     async def load_query(self, query: str) -> list[dict]:
         try:
             status, data = await self.getData(query)
             if status != 200:
-                raise Exception(f"Error loading data {status}")
+                raise Exception(f"Error loading data {status}, {data}")
             if not data:
                 logger.debug("no data")
         except Exception as e:
             logger.debug(e)
             data = []
         return data
-
-
-def from_zermelo_dict(cls, data: dict, *args, **kwargs):
-    [
-        logger.debug(f"{k} ({v}) not defined in {cls}")
-        for k, v in data.items()
-        if k not in inspect.signature(cls).parameters
-    ]
-    return cls(
-        *args,
-        **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
-        **kwargs,
-    )
-
-
-@dataclass
-class ZermeloCollection(list):
-    zermelo: ZermeloAPI
-
-    async def load_collection(self, query: str, type: object, *args, **kwargs) -> None:
-        data = await self.zermelo.load_query(query)
-        for row in data:
-            self.append(from_zermelo_dict(type, row, *args, **kwargs))
-
-    # def test(self, query: str):
-    #     data = self.zermelo.load_query(query)
-    #     for row in data:
-    #         logger.info(f"test: {row}")

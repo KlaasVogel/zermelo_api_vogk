@@ -1,4 +1,4 @@
-from .zermelo_api import ZermeloCollection
+from .zermelo_collection import ZermeloCollection
 from dataclasses import dataclass, InitVar
 import logging
 
@@ -38,9 +38,9 @@ class Leerjaar:
 
 
 @dataclass
-class Leerjaren(ZermeloCollection, list[Leerjaar]):
-    schoolinschoolyear: InitVar
+class Leerjaren(ZermeloCollection[Leerjaar]):
+    schoolinschoolyear: InitVar[int] = 0
 
     def __post_init__(self, schoolinschoolyear: int):
-        query = f"departmentsofbranches?schoolInSchoolYear={schoolinschoolyear}"
-        self.load_collection(query, Leerjaar)
+        self.query = f"departmentsofbranches?schoolInSchoolYear={schoolinschoolyear}"
+        self.type = Leerjaar

@@ -1,4 +1,4 @@
-from .zermelo_api import ZermeloCollection, zermelo
+from .zermelo_collection import ZermeloCollection
 from dataclasses import dataclass, InitVar, field
 import logging
 
@@ -18,12 +18,12 @@ class Lokaal:
 
 
 @dataclass
-class Lokalen(ZermeloCollection, list[Lokaal]):
-    schoolInSchoolYear: InitVar
+class Lokalen(ZermeloCollection[Lokaal]):
+    schoolinschoolyear: InitVar[int] = 0
 
-    def __post_init__(self, schoolInSchoolYear: int):
-        query = f"locationofbranches?schoolInSchoolYear={schoolInSchoolYear}"
-        self.load_collection(query, Lokaal)
+    def __post_init__(self, schoolinschoolyear: int):
+        self.query = f"locationofbranches?schoolInSchoolYear={schoolinschoolyear}"
+        self.type = Lokaal
 
     def get(self, id: int) -> Lokaal | None:
         for lokaal in self:
