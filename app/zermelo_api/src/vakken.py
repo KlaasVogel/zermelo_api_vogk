@@ -1,4 +1,4 @@
-from .zermelo_api import ZermeloCollection, zermelo
+from .zermelo_collection import ZermeloCollection
 from dataclasses import dataclass, InitVar, field
 import logging
 
@@ -41,12 +41,12 @@ class Vak:
 
 
 @dataclass
-class Vakken(ZermeloCollection, list[Vak]):
-    schoolinschoolyear: InitVar
+class Vakken(ZermeloCollection[Vak]):
+    schoolinschoolyear: InitVar[int] = 0
 
     def __post_init__(self, schoolinschoolyear: int):
-        query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
-        self.load_collection(query, Vak)
+        self.query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
+        self.type = Vak
 
     def get(self, vaknaam: str) -> Vak:
         for vak in self:

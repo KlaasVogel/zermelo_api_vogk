@@ -4,7 +4,7 @@ from .groepen import Groepen, Groep
 from .users import Leerlingen, Leerling, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
 from .time_utils import get_date, delta_week
-from .zermelo_api import zermelo, from_zermelo_dict
+from .zermelo_api import from_zermelo_dict
 import logging
 
 logger = logging.getLogger(__name__)
@@ -81,7 +81,7 @@ def get_vak_data(
     id: int, code: str, groupName: str, start, eind
 ) -> tuple[list[int], list[str], list[str]]:
     query = f"appointments/?containsStudentsFromGroupInDepartment={id}&subjects={code}&type=lesson&start={start}&end={eind}&fields=appointmentInstance,id,teachers,students,subjects,groups,groupsInDepartments,choosableInDepartmentCodes,valid,cancelled"
-    vakdata = zermelo.load_query(query)
+    vakdata = self.zermelo.load_query(query)
     grp_bck = []
     ll_bck = []
     doc_bck = []

@@ -1,4 +1,4 @@
-from .zermelo_api import ZermeloCollection, zermelo, from_zermelo_dict
+from .zermelo_collection import ZermeloCollection, from_zermelo_dict
 from dataclasses import dataclass, InitVar, field
 import logging
 
@@ -85,11 +85,16 @@ class Leerling(User):
 
 
 @dataclass
-class Leerlingen(ZermeloCollection, Users, list[Leerling]):
+class Leerlingen(Users, ZermeloCollection[Leerling]):
+    schoolinschoolyear: InitVar[int] = 0
 
-    async def _init(self, schoolinschoolyear: int):
-        query = f"users?schoolInSchoolYear={schoolinschoolyear}&isStudent=true"
-        data = await self.zermelo.load_query(query)
+    def __post_init__(self, schoolinschoolyear: int):
+        super().__post_init__()
+        self.query = f"users?schoolInSchoolYear={schoolinschoolyear}&isStudent=true"
+        self.type = Leerling
+
+    async def _init(self):
+        data = await self.get_collection()
         if data:
             self.load_leerlingen(data)
 
@@ -119,12 +124,12 @@ class Medewerker(User):
 
 
 @dataclass
-class Personeel(ZermeloCollection, Users, list[Medewerker]):
-    schoolinschoolyear: InitVar
+class Personeel(Users, ZermeloCollection[Medewerker]):
+    schoolinschoolyear: InitVar[int] = 0
 
     def __post_init__(self, schoolinschoolyear: int):
-        query = f"users?schoolInSchoolYear={schoolinschoolyear}&isEmployee=true"
-        self.load_collection(query, Medewerker)
+        self.query = f"users?schoolInSchoolYear={schoolinschoolyear}&isEmployee=true"
+        self.type = Medewerker
 
     def __repr__(self):
         return f"{self}{self.print_list()}"

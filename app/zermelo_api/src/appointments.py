@@ -1,4 +1,4 @@
-from .zermelo_api import zermelo, from_zermelo_dict
+from .zermelo_api import from_zermelo_dict
 from dataclasses import dataclass, InitVar, field
 import logging
 

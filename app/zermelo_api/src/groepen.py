@@ -1,4 +1,4 @@
-from .zermelo_api import ZermeloCollection, zermelo
+from .zermelo_collection import ZermeloCollection
 from dataclasses import dataclass, InitVar
 import logging
 
@@ -16,12 +16,12 @@ class Groep:
 
 
 @dataclass
-class Groepen(ZermeloCollection, list[Groep]):
-    schoolinschoolyear: InitVar
+class Groepen(ZermeloCollection[Groep]):
+    schoolinschoolyear: InitVar[int] = 0
 
     def __post_init__(self, schoolinschoolyear: int):
-        query = f"groupindepartments?schoolInSchoolYear={schoolinschoolyear}"
-        self.load_collection(query, Groep)
+        self.query = f"groupindepartments?schoolInSchoolYear={schoolinschoolyear}"
+        self.type = Groep
 
     def get_department_groups(
         self, departmentOfBranch: int, maingroup: bool = False
