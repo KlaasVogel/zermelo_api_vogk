@@ -1,4 +1,5 @@
 from .zermelo_collection import ZermeloCollection
+from .vakken import Vak
 from dataclasses import dataclass, InitVar
 import logging
 
@@ -13,6 +14,9 @@ class Groep:
     departmentOfBranch: int
     name: str
     extendedName: str
+
+
+class deelnemers(tuple[list[int], list[str], list[str]]): ...
 
 
 @dataclass
@@ -33,3 +37,16 @@ class Groepen(ZermeloCollection[Groep]):
             if groep.departmentOfBranch == departmentOfBranch
             and groep.isMainGroup == maingroup
         ]
+
+    def get_vakgroepen(self, vak: Vak) -> list[Groep]:
+        result = []
+        logger.debug(f"finding groep for vak: {vak.subjectCode}")
+        for groep in self.get_department_groups(vak.departmentOfBranch):
+            if groep in result:
+                continue
+            if vak.qualifiedCode and vak.qualifiedCode in groep.extendedName:
+                logger.debug(
+                    f"found {groep.name} with {vak.qualifiedCode} in {groep.extendedName}"
+                )
+                result.append(groep)
+        return result

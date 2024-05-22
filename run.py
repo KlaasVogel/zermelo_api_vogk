@@ -10,8 +10,7 @@ async def main():
     branches = Branches(zermelo)
     await branches._init("")
     for branch in branches:
-        logger.info(branch)
-    #     if branch.branch == "lg":
-    #         branch.load_lesgroepen()
+        if branch.branch == "lg":
+            lesgroepen = await branch.find_lesgroepen()
 
 asyncio.run(main())

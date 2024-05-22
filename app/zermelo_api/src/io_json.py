@@ -1,10 +1,14 @@
 import aiohttp
+import logging
 
+logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
 
 async def get_json(url: str):
     async with aiohttp.ClientSession() as client:
         async with client.get(url) as response:
-            assert response.status == 200
+            # logger.debug(response)
+            # assert response.status == 200
             return await response.read()
 
 

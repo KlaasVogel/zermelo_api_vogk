@@ -5,7 +5,7 @@ import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 
 def from_zermelo_dict(cls, data: dict, *args, **kwargs):
