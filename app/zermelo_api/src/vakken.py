@@ -60,5 +60,20 @@ class Vakken(ZermeloCollection[Vak]):
                 return (vak.subject, vak.getName())
         return (0, "Onbekend")
 
-    def get_leerjaar_vakken(self, leerjaar_id: int) -> list[Vak]:
-        return [vak for vak in self if vak.departmentOfBranch == leerjaar_id]
+    def get_leerjaar_vakken(self, leerjaar_id: int, skip: bool = False) -> list[Vak]:
+        return [
+            vak
+            for vak in self
+            if vak.departmentOfBranch == leerjaar_id
+            and not (
+                skip
+                and (
+                    vak.subjectType in ["education", "profile"]
+                    or vak.scheduleCode
+                    in [
+                        "lo",
+                        "sport",
+                    ]
+                )
+            )
+        ]

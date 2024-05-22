@@ -5,7 +5,6 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 async def loadAPI(name: str) -> ZermeloAPI:
     zermelo = ZermeloAPI(name)
@@ -84,12 +83,9 @@ class ZermeloAPI:
                 if json_status == 200:
                     result = (200, json_response["response"]["data"])
                     logger.debug("    **** JSON OK ****")
-                    logger.debug(result)
                 else:
-                    logger.debug(
-                        f"oeps, geen juiste response: {task} - {json_response['response']}"
-                    )
-                    result = (json_status, json_response["response"])
+                    logger.debug(f"oeps, geen juiste response: {task}")
+                    result = (json_status, json_response["response"]["message"])
             else:
                 logger.error("JSON - response is leeg")
         except Exception as e:
