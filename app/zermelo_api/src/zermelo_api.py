@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 async def loadAPI(name: str) -> ZermeloAPI:
     zermelo = ZermeloAPI(name)
     if not await zermelo.checkCreds():
