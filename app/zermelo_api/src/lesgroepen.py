@@ -78,7 +78,7 @@ class Lesgroepen(list[Lesgroep]):
             for vak, lesgroepen in results:
                 self.extend(lesgroepen)
                 if not len(lesgroepen):
-                    logger.warning(vak)
+                    logger.debug(f"no regular groups found for {vak.subjectName}")
                     maingroepen = groepen.get_department_groups(leerjaar.id, True)
                     tasks2.append(
                         asyncio.create_task(
