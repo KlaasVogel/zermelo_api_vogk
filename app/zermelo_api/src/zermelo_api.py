@@ -68,7 +68,9 @@ class ZermeloAPI:
         else:
             return " ".join([row["firstName"], row["prefix"], row["lastName"]])
 
-    async def getData(self, task, from_id=False) -> tuple[int, list[dict] | str]:
+    async def getData(
+        self, task, from_id=False
+    ) -> tuple[int, list[dict] | str | Exception]:
         result = (500, "unknown error")
         request = (
             self.zerurl + task + f"?access_token={self.credentials.token}"
@@ -91,6 +93,7 @@ class ZermeloAPI:
                 logger.error("JSON - response is leeg")
         except Exception as e:
             logger.error(e)
+            result = (500, e)
         finally:
             return result
 
