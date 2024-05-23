@@ -70,7 +70,7 @@ class Appointment:
 
 
 async def get_appointments(zermelo: ZermeloAPI, query: str) -> list[Appointment]:
-    status, data = zermelo.getData(query)
+    status, data = await zermelo.getData(query)
     if status != 200:
         raise Exception(data)
     return [from_zermelo_dict(Appointment, row) for row in data]
