@@ -1,4 +1,5 @@
-from .zermelo_collection import ZermeloCollection, ZermeloAPI, from_zermelo_dict
+from .zermelo_collection import ZermeloCollection, from_zermelo_dict
+from .zermelo_api import ZermeloAPI, loadAPI
 from .time_utils import get_date, get_year, datetime
 from .users import Leerlingen, Personeel
 from .leerjaren import Leerjaren
@@ -29,7 +30,7 @@ class SchoolInSchoolYear:
 
 @dataclass
 class Branch:
-    zermelo: InitVar
+    zermelo: ZermeloAPI
     id: int
     schoolInSchoolYear: int
     branch: str
@@ -43,14 +44,14 @@ class Branch:
     groepen: Groepen = field(default_factory=list)
     lokalen: Lokalen = field(default_factory=list)
 
-    def __post_init__(self, zermelo: ZermeloAPI):
+    def __post_init__(self):
         logger.info(f"*** loading branch: {self.name} ***")
-        self.leerlingen = Leerlingen(zermelo, self.schoolInSchoolYear)
-        self.personeel = Personeel(zermelo, self.schoolInSchoolYear)
-        self.leerjaren = Leerjaren(zermelo, self.schoolInSchoolYear)
-        self.groepen = Groepen(zermelo, self.schoolInSchoolYear)
-        self.vakken = Vakken(zermelo, self.schoolInSchoolYear)
-        self.lokalen = Lokalen(zermelo, self.schoolInSchoolYear)
+        self.leerlingen = Leerlingen(self.zermelo, self.schoolInSchoolYear)
+        self.personeel = Personeel(self.zermelo, self.schoolInSchoolYear)
+        self.leerjaren = Leerjaren(self.zermelo, self.schoolInSchoolYear)
+        self.groepen = Groepen(self.zermelo, self.schoolInSchoolYear)
+        self.vakken = Vakken(self.zermelo, self.schoolInSchoolYear)
+        self.lokalen = Lokalen(self.zermelo, self.schoolInSchoolYear)
 
     async def _init(self):
         attrs = ["leerlingen", "personeel", "leerjaren", "groepen", "vakken", "lokalen"]
@@ -73,7 +74,6 @@ class Branch:
 
 @dataclass
 class Branches(ZermeloCollection[Branch]):
-
     def __post_init__(self):
         super().__post_init__()
         self.type = Branch
@@ -103,7 +103,6 @@ class Branches(ZermeloCollection[Branch]):
         return "Branches(" + ", ".join([br.name for br in self]) + ")"
 
     def get(self, name: str) -> Branch:
-        logger.info(f"loading branch: {name} ")
         for branch in self:
             if (
                 name.lower() in branch.branch.lower()
@@ -112,3 +111,15 @@ class Branches(ZermeloCollection[Branch]):
                 return branch
         else:
             logger.error(f"NO Branch found for {name}")
+
+
+async def load_branches(schoolname: str, date: str = "", type=None) -> Branches:
+    try:
+        zermelo = await loadAPI(schoolname)
+        branches = Branches(zermelo)
+        if type:
+            branches.type = type
+        await branches._init(date)
+        return branches
+    except Exception as e:
+        logger.error(e)
