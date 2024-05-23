@@ -86,7 +86,7 @@ class ZermeloAPI:
                     logger.debug("    **** JSON OK ****")
                 else:
                     logger.debug(f"oeps, geen juiste response: {task}")
-                    result = (json_status, json_response["response"]["message"])
+                    result = (json_status, json_response["response"])
             else:
                 logger.error("JSON - response is leeg")
         except Exception as e:
