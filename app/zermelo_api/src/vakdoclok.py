@@ -1,4 +1,4 @@
-from .zermelo_api import ZermeloCollection
+from .zermelo_collection import ZermeloCollection, ZermeloAPI
 from dataclasses import dataclass, InitVar, field
 
 
@@ -9,10 +9,15 @@ class VakDocLokData:
     choosableInDepartments: list[str]
 
 
-class DataVakDocLoks(ZermeloCollection, list[VakDocLokData]):
-    def __init__(self, id_branch: int, start: int, eind: int):
-        query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,teachers,choosableInDepartments,&start={start}&end={eind}"
-        self.load_collection(query, VakDocLokData)
+@dataclass
+class DataVakDocLoks(ZermeloCollection[VakDocLokData]):
+    branch_id: InitVar[int] = 0
+    start: InitVar[int] = 0
+    eind: InitVar[int] = 0
+
+    def __post_init__(self, id_branch: int, start: int, eind: int):
+        self.query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,teachers,choosableInDepartments,&start={start}&end={eind}"
+        self.type = VakDocLokData
 
 
 @dataclass
@@ -48,8 +53,9 @@ class VakDocLoks(list[VakDocLok]):
         return False
 
 
-def get_vakdocloks(id_branch: int, start: int, eind: int):
-    vakdata = DataVakDocLoks(id_branch, start, eind)
+async def get_vakdocloks(zermelo: ZermeloAPI, id_branch: int, start: int, eind: int):
+    vakdata = DataVakDocLoks(zermelo, id_branch, start, eind)
+    await vakdata._init()
     vakdocloks = VakDocLoks()
     for data in vakdata:
         for id in data.choosableInDepartments:
