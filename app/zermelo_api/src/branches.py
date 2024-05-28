@@ -7,8 +7,7 @@ from .groepen import Groepen
 from .lesgroepen import Lesgroepen
 from .vakken import Vakken
 from .lokalen import Lokalen
-
-# from .vakdoclok import get_vakdocloks, VakDocLoks
+from .vakdoclok import get_vakdocloks, VakDocLoks
 from dataclasses import dataclass, InitVar, field
 import asyncio
 import logging
@@ -68,8 +67,10 @@ class Branch:
             )
         return False
 
-    # def get_vak_doc_loks(self, start: int, eind: int) -> VakDocLoks:
-    #     return get_vakdocloks(self.id, start, eind)
+    async def get_vak_doc_loks(self) -> VakDocLoks:
+        start = int(self.date.timestamp())
+        eind = start + 28 * 24 * 3600
+        return await get_vakdocloks(self.zermelo, self.id, start, eind)
 
 
 @dataclass
