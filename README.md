@@ -1,7 +1,7 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V1.0.9
+# V1.0.10
  - async loading lesgroepen done
  - async loading appointments done
  - enabled packages in __init__
