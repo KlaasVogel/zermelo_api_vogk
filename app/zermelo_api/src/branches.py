@@ -1,6 +1,6 @@
-from ._zermelo_collection import ZermeloCollection, from_zermelo_dict
-from ._zermelo_api import zermelo, loadAPI
-from ._time_utils import get_date, get_year, datetime
+from ._zermelo_collection import ZermeloCollection
+from ._time_utils import get_date, datetime
+from .schoolyears import SchoolYears, SchoolInSchoolYear, load_schoolyears
 from .users import Leerlingen, Personeel
 from .leerjaren import Leerjaren
 from .groepen import Groepen
@@ -14,27 +14,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
-
-@dataclass
-class SchoolInSchoolYear:
-    id: int
-    school: int
-    year: int
-    archived: bool
-    name: str
-    projectName: str
-    schoolName: str
-    schoolHrmsCode: str
-
-
-@dataclass
-class SchoolYears(ZermeloCollection[SchoolInSchoolYear]):
-    def __post_init__(self, datestring: str = ""):
-        year = get_year(datestring)
-        logger.debug(year)
-        self.query = f"schoolsinschoolyears/?year={year}&archived=False"
-        self.type = SchoolInSchoolYear
-
 
 @dataclass
 class Branch:
@@ -124,18 +103,10 @@ async def load_branches(schoolname: str, date: str = "", type=None) -> Branches:
         logger.error(e)
 
 
-async def load_schoolyears(schoolname, date: str = "") -> SchoolYears:
-    try:
-        await loadAPI(schoolname)
-        schoolyears = SchoolYears()
-        await schoolyears._init(date)
-        return schoolyears
-    except Exception as e:
-        logger.error(e)
-
-
 async def load_schools(
-    schoolname, date: str = "", type=None
+    schoolname: str,
+    date: str = "",
+    type=None,
 ) -> tuple[SchoolYears, Branches]:
     try:
         schoolyears = await load_schoolyears(schoolname, date)
