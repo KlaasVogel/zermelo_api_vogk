@@ -4,7 +4,7 @@ from .vaklessen import get_groep_data, LesData
 from .groepen import Groepen, Groep
 from .users import Leerlingen, Leerling, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
-from .zermelo_collection import from_zermelo_dict
+from ._zermelo_collection import from_zermelo_dict
 import asyncio
 import logging
 

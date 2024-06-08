@@ -1,4 +1,4 @@
-from .zermelo_collection import ZermeloCollection, ZermeloAPI
+from ._zermelo_collection import ZermeloCollection
 from dataclasses import dataclass, InitVar, field
 
 
@@ -53,8 +53,8 @@ class VakDocLoks(list[VakDocLok]):
         return False
 
 
-async def get_vakdocloks(zermelo: ZermeloAPI, id_branch: int, start: int, eind: int):
-    vakdata = DataVakDocLoks(zermelo, id_branch, start, eind)
+async def get_vakdocloks(id_branch: int, start: int, eind: int):
+    vakdata = DataVakDocLoks(id_branch, start, eind)
     await vakdata._init()
     vakdocloks = VakDocLoks()
     for data in vakdata:

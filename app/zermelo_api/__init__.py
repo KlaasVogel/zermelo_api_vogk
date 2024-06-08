@@ -1,7 +1,6 @@
-from .src.zermelo_api import ZermeloAPI, loadAPI
-# from .src.collections import ZermeloCollection
-from .src.branches import Branch, Branches, load_branches
-from .src.time_utils import *
+from .src._zermelo_api import ZermeloAPI, loadAPI
+from .src.branches import Branch, Branches, load_branches, load_schools
+from .src._time_utils import *
 from .src.users import Leerling, Medewerker, Leerlingen, Personeel
 from .src.lesgroepen import Lesgroepen, Lesgroep
 from .src.leerjaren import Leerjaar, Leerjaren

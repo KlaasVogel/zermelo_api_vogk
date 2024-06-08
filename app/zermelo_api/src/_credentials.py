@@ -1,4 +1,4 @@
-from .config import getConfig
+from ._config import getConfig
 import logging
 
 logger = logging.getLogger(__name__)
