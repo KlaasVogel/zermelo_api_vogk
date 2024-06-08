@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
 
+
 async def get_json(url: str):
     async with aiohttp.ClientSession() as client:
         async with client.get(url) as response:

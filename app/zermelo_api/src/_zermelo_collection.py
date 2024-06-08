@@ -1,7 +1,6 @@
-from dataclasses import dataclass, field
-from .zermelo_api import ZermeloAPI
+from dataclasses import dataclass
+from ._zermelo_api import zermelo
 import inspect
-import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,8 +22,6 @@ def from_zermelo_dict(cls, data: dict, *args, **kwargs):
 
 @dataclass
 class ZermeloCollection[T](list[T]):
-    zermelo: ZermeloAPI = field(repr=False)
-
     def __post_init__(self):
         self.type = None
         self.query = ""
@@ -32,7 +29,7 @@ class ZermeloCollection[T](list[T]):
     async def get_collection(self, query: str = "") -> list[dict]:
         query = self.get_query(query)
         logger.debug(f"type: {self.type}")
-        return await self.zermelo.load_query(query)
+        return await zermelo.load_query(query)
 
     async def load_collection(self, query: str, *args, **kwargs):
         for row in await self.get_collection(query):

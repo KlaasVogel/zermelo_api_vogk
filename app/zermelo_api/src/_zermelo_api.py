@@ -1,25 +1,30 @@
 from __future__ import annotations
-from .credentials import Credentials
-from .io_json import get_json, post_request
+from ._credentials import Credentials
+from ._io_json import get_json, post_request
 import json
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-async def loadAPI(name: str) -> ZermeloAPI:
-    zermelo = ZermeloAPI(name)
-    if not await zermelo.checkCreds():
-        with open("creds.ini") as f:
-            token = f.read()
-            await zermelo.add_token(token)
-    return zermelo
-
-
 class ZermeloAPI:
-    def __init__(self, school: str):
+
+    def __init__(self):
         self.credentials = Credentials()
+        self.loaded = False
+
+    async def _init(self, school: str):
+        if self.loaded:
+            return
         self.zerurl = f"https://{school}.zportal.nl/api/v3/"
+        try:
+            if not await self.checkCreds():
+                with open("creds.ini") as f:
+                    token = f.read()
+                    await self.add_token(token)
+            self.loaded = True
+        except Exception as e:
+            logger.exception(e)
 
     def login(self, code: str) -> bool:
         token = self.get_access_token(code)
@@ -108,3 +113,11 @@ class ZermeloAPI:
             logger.debug(e)
             data = []
         return data
+
+
+zermelo = ZermeloAPI()
+
+
+async def loadAPI(name: str) -> ZermeloAPI:
+    await zermelo._init(name)
+    return zermelo

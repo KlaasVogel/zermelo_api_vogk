@@ -1,4 +1,4 @@
-from .zermelo_collection import ZermeloCollection
+from ._zermelo_collection import ZermeloCollection
 from dataclasses import dataclass, InitVar, field
 import logging
 

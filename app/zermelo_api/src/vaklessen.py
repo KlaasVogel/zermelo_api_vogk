@@ -1,13 +1,12 @@
-from .zermelo_collection import ZermeloCollection, ZermeloAPI
+from ._zermelo_collection import ZermeloCollection
 from .vakken import Vak
 from .groepen import Groep
-from .time_utils import get_date, delta_week
+from ._time_utils import get_date, delta_week
 from dataclasses import dataclass, InitVar, field
 import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
 
 
 @dataclass
@@ -112,7 +111,7 @@ class VakLessen(ZermeloCollection[VakLes]):
         return (leerlingen, docenten, grp_namen)
 
 
-async def get_vakgroep_lessen(zermelo: ZermeloAPI, vak: Vak, groep: Groep) -> VakLessen:
+async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
     date = get_date()
     result: list[VakLessen] = []
     try:
@@ -123,7 +122,6 @@ async def get_vakgroep_lessen(zermelo: ZermeloAPI, vak: Vak, groep: Groep) -> Va
             eindtijd = int(delta_week(date, dweek + 4).timestamp())
             result.append(
                 VakLessen(
-                    zermelo,
                     groep.id,
                     vak.subjectCode,
                     groep.extendedName,
@@ -159,8 +157,8 @@ def check_data(data: LesData, vak: Vak) -> LesData | bool:
     return False
 
 
-async def get_vakgroep_data(zermelo: ZermeloAPI, vak, groep) -> LesData | bool:
-    vaklessen = await get_vakgroep_lessen(zermelo, vak, groep)
+async def get_vakgroep_data(vak, groep) -> LesData | bool:
+    vaklessen = await get_vakgroep_lessen(vak, groep)
     if not len(vaklessen):
         logger.debug("geen lessen")
         return False
@@ -169,8 +167,6 @@ async def get_vakgroep_data(zermelo: ZermeloAPI, vak, groep) -> LesData | bool:
     return check_data(lesdata, vak)
 
 
-async def get_groep_data(
-    zermelo: ZermeloAPI, vak: Vak, groep: Groep
-) -> tuple[Groep, LesData | bool]:
-    data = await get_vakgroep_data(zermelo, vak, groep)
+async def get_groep_data(vak: Vak, groep: Groep) -> tuple[Groep, LesData | bool]:
+    data = await get_vakgroep_data(vak, groep)
     return (groep, data)
