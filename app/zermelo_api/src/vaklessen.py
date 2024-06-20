@@ -116,7 +116,7 @@ async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
     result: list[VakLessen] = []
     try:
         logger.debug(groep)
-        for x in [0, -1, -2, 1, 2, 3]:
+        for x in [0, -1, 1, -2, 2, 3, -3]:
             dweek = x * 4
             starttijd = int(delta_week(date, dweek).timestamp())
             eindtijd = int(delta_week(date, dweek + 4).timestamp())
