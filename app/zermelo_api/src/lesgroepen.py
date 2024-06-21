@@ -115,9 +115,7 @@ async def find_lesgroepen(
     lln: Leerlingen,
     docs: Personeel,
 ) -> tuple[Vak, list[Lesgroep]]:
-    datalist = await asyncio.gather(
-        *[get_groep_data(lln.zermelo, vak, groep) for groep in grpn]
-    )
+    datalist = await asyncio.gather(*[get_groep_data(vak, groep) for groep in grpn])
     lesgroepen: list[Lesgroep] = []
     for groep, lesdata in datalist:
         if lesdata:
