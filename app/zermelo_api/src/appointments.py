@@ -82,11 +82,11 @@ async def get_user_appointments(user: int | str, **kwargs) -> list[Appointment]:
     for key, val in kwargs.items():
         query += f"&{key}={val}"
     logger.debug(query)
-    return await get_appointments(zermelo, query)
+    return await get_appointments(query)
 
 
 async def get_department_updates(id: int, **kwargs) -> list[Appointment]:
     query = f"appointments/?containsStudentsFromGroupInDepartment={id}"
     for key, val in kwargs.items():
         query += f"&{key}={val}"
-    return await get_appointments(zermelo, query)
+    return await get_appointments(query)
