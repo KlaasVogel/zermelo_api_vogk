@@ -8,6 +8,22 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+skip_docs: list[str] = ["stth", "lgverv"]
+
+
+def check_doc_skip(doc: str) -> bool:
+    for skip_doc in skip_docs:
+        if skip_doc.lower() in doc.lower():
+            return True
+    return False
+
+
+def clean_checklist(checklist: list[str]):
+    for doc in reversed(checklist):
+        if check_doc_skip(doc):
+            checklist.remove(doc)
+    return checklist
+
 
 @dataclass
 class VakLes:
@@ -42,8 +58,7 @@ class VakLes:
 
 def clean_docs(docs: list[str]) -> list[str]:
     checklist = list(set(docs))
-    if "lgverv" in checklist:
-        checklist.remove("lgverv")
+    clean_checklist(checklist)
     max = 0
     if len(checklist) > 1:
         logger.warning(f"multiple docs: {checklist}")
