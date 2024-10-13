@@ -63,6 +63,9 @@ class Appointment:
     def __eq__(self, other) -> bool:
         return self.id == other.id
 
+    def __hash__(self):
+        return hash((self.id, self.lastModified))
+
     # doesn't work (not enough rights)
     # @classmethod
     # def get_appointment(cls, id: int):
@@ -81,7 +84,7 @@ async def get_appointments(query: str) -> list[Appointment]:
 
 
 async def get_location_appointments(lok: int | str, **kwargs) -> list[Appointment]:
-    query = f"appointments/?location={lok}"
+    query = f"appointments/?locationsOfBranch={lok}"
     for key, val in kwargs.items():
         query += f"&{key}={val}"
     logger.debug(query)
