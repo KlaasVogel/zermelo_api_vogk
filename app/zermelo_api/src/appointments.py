@@ -60,6 +60,9 @@ class Appointment:
     onlineTeachers: list[str] = field(default_factory=list)
     students: list[str] = field(default_factory=list)
 
+    def __eq__(self, other) -> bool:
+        return self.id == other.id
+
     # doesn't work (not enough rights)
     # @classmethod
     # def get_appointment(cls, id: int):
@@ -75,6 +78,14 @@ async def get_appointments(query: str) -> list[Appointment]:
     if status != 200:
         raise Exception(data)
     return [from_zermelo_dict(Appointment, row) for row in data]
+
+
+async def get_location_appointments(lok: int | str, **kwargs) -> list[Appointment]:
+    query = f"appointments/?location={lok}"
+    for key, val in kwargs.items():
+        query += f"&{key}={val}"
+    logger.debug(query)
+    return await get_appointments(query)
 
 
 async def get_user_appointments(user: int | str, **kwargs) -> list[Appointment]:
