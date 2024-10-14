@@ -1,7 +1,7 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V1.1.9 (refactoring & bugfixes)
+# V1.1.10 (refactoring & bugfixes)
  - moved zermelo API to single zermelo in _zermeloApi.py
  - added loading of SchoolInSchoolYears
  - bugfix added extra weeks in past for finding lesgroepen (re)enabled loading of time_utils
