@@ -97,7 +97,7 @@ class ZermeloAPI:
             else:
                 logger.error("JSON - response is leeg")
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             result = (500, e)
         finally:
             return result
