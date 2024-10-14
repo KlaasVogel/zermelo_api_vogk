@@ -88,7 +88,7 @@ async def get_appointments(query: str) -> list[Appointment]:
         return []
 
 
-async def get_location_appointments(lok: int, **kwargs) -> list[Appointment]:
+async def get_location_appointments(lok: int | str, **kwargs) -> list[Appointment]:
     query = f"appointments/?locationsOfBranch={lok}"
     for key, val in kwargs.items():
         query += f"&{key}={val}"
