@@ -77,13 +77,18 @@ class Appointment:
 
 
 async def get_appointments(query: str) -> list[Appointment]:
-    status, data = await zermelo.getData(query)
-    if status != 200:
-        raise Exception(data)
-    return [from_zermelo_dict(Appointment, row) for row in data]
+    try:
+        status, data = await zermelo.getData(query)
+        if status != 200:
+            raise Exception(data)
+        return [from_zermelo_dict(Appointment, row) for row in data]
+    except Exception as e:
+        logger.exception(e)
+        logger.error(query)
+        return []
 
 
-async def get_location_appointments(lok: int | str, **kwargs) -> list[Appointment]:
+async def get_location_appointments(lok: int, **kwargs) -> list[Appointment]:
     query = f"appointments/?locationsOfBranch={lok}"
     for key, val in kwargs.items():
         query += f"&{key}={val}"
