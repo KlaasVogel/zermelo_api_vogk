@@ -66,15 +66,6 @@ class Appointment:
     def __hash__(self):
         return hash((self.id, self.lastModified))
 
-    # doesn't work (not enough rights)
-    # @classmethod
-    # def get_appointment(cls, id: int):
-    #     query = f"appointments/{id}"
-    #     status, data = zermelo.getData(query, from_id=True)
-    #     if status != 200:
-    #         raise Exception(data)
-    #     return from_zermelo_dict(cls, data[0])
-
 
 async def get_appointments(query: str) -> list[Appointment]:
     try:
@@ -88,8 +79,10 @@ async def get_appointments(query: str) -> list[Appointment]:
         return []
 
 
-async def get_location_appointments(lok: int | str, **kwargs) -> list[Appointment]:
-    query = f"appointments/?locationsOfBranch={lok}"
+async def get_location_appointments(
+    lok: int, schoolyear: int, **kwargs
+) -> list[Appointment]:
+    query = f"appointments/?locationsOfBranch={lok}&schoolInSchoolYear={schoolyear}"
     for key, val in kwargs.items():
         query += f"&{key}={val}"
     logger.debug(query)
