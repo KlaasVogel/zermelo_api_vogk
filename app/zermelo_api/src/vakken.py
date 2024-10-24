@@ -14,6 +14,7 @@ class Vak:
     sectionOfBranch: int
     courseType: str
     lessonHoursInClassPeriods: list[dict]
+    scroungeSegments: list[int]
     excludedSegments: list[int]
     referenceWeek: dict  # (year:int, weekNumber: int, schoolYear: int)
     isExam: bool
