@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-skip_docs: list[str] = ["stth", "lgverv"]
+skip_docs: list[str] = ["stth", "lgverv", "lgst"]
 
 
 def check_doc_skip(doc: str) -> bool:
