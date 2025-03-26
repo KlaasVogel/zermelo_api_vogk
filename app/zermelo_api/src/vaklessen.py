@@ -127,6 +127,7 @@ class VakLessen(ZermeloCollection[VakLes]):
 
 
 async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
+    logger.debug(f"getting vakgroep lessen for {vak} and {groep}")
     date = get_date()
     result: list[VakLessen] = []
     try:
@@ -161,6 +162,8 @@ async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
 
 
 def check_data(data: LesData, vak: Vak) -> LesData | bool:
+    logger.debug(f"checking data for: \n  data: {data}\n  vak: {vak}")
+
     leerlingen, docenten, groep_namen = data
     if len(leerlingen) and len(docenten):
         namen = [
@@ -173,6 +176,7 @@ def check_data(data: LesData, vak: Vak) -> LesData | bool:
 
 
 async def get_vakgroep_data(vak, groep) -> LesData | bool:
+    logger.debug(f"getting vakgroep data for: \n  vak: {vak}\n  groep: {groep}")
     vaklessen = await get_vakgroep_lessen(vak, groep)
     if not len(vaklessen):
         logger.debug("geen lessen")
@@ -183,5 +187,6 @@ async def get_vakgroep_data(vak, groep) -> LesData | bool:
 
 
 async def get_groep_data(vak: Vak, groep: Groep) -> tuple[Groep, LesData | bool]:
+    logger.debug(f"getting data for: \n  vak: {vak}\n  groep: {groep}")
     data = await get_vakgroep_data(vak, groep)
     return (groep, data)
