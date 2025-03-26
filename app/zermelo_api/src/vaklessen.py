@@ -39,13 +39,18 @@ class VakLes:
     cancelled: bool
 
     def filter(self, name: str) -> bool:
+        logger.debug(f"filtering {self} ({name})")
         if self.cancelled:
+            logger.debug("cancelled")
             return False
         if not self.valid:
+            logger.debug("invalid")
             return False
         if not len(self.students):
+            logger.debug("no students")
             return False
         if not len(self.teachers):
+            logger.debug("no teachers")
             return False
         if len(self.students) > 40:
             logger.debug("groep te groot")
@@ -53,6 +58,7 @@ class VakLes:
         if not any([name.split(".")[-1] in group for group in self.groups]):
             logger.debug(f"{name} not in {self}")
             return False
+        logger.debug("True")
         return True
 
 
@@ -88,6 +94,7 @@ class VakLessen(ZermeloCollection[VakLes]):
         self.type = VakLes
 
     def filter(self) -> list[VakLes]:
+        logger.debug(f"filtering {self}")
         return [les for les in self if les.filter(self.groupName)]
 
     def get_data(self) -> LesData:
@@ -126,25 +133,29 @@ class VakLessen(ZermeloCollection[VakLes]):
         return (leerlingen, docenten, grp_namen)
 
 
-async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
-    logger.debug(f"getting vakgroep lessen for {vak} and {groep}")
+def create_new_vaklessen(vak: Vak, groep: Groep) -> list[VakLessen]:
     date = get_date()
     result: list[VakLessen] = []
-    try:
-        logger.debug(groep)
-        for x in [0, -1, 1, -2, 2, 3, -3]:
-            dweek = x * 4
-            starttijd = int(delta_week(date, dweek).timestamp())
-            eindtijd = int(delta_week(date, dweek + 4).timestamp())
-            result.append(
-                VakLessen(
-                    groep.id,
-                    vak.subjectCode,
-                    groep.extendedName,
-                    starttijd,
-                    eindtijd,
-                )
+    for x in [0, -1, 1, -2, 2, 3, -3]:
+        dweek = x * 4
+        starttijd = int(delta_week(date, dweek).timestamp())
+        eindtijd = int(delta_week(date, dweek + 4).timestamp())
+        result.append(
+            VakLessen(
+                groep.id,
+                vak.subjectCode,
+                groep.extendedName,
+                starttijd,
+                eindtijd,
             )
+        )
+    return result
+
+
+async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
+    logger.debug(f"getting vakgroep lessen for {vak} and {groep}")
+    try:
+        result = create_new_vaklessen(vak, groep)
         for vaklessen in result:
             logger.debug(f"init: {vaklessen}")
             await vaklessen._init()
@@ -163,7 +174,6 @@ async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
 
 def check_data(data: LesData, vak: Vak) -> LesData | bool:
     logger.debug(f"checking data for: \n  data: {data}\n  vak: {vak}")
-
     leerlingen, docenten, groep_namen = data
     if len(leerlingen) and len(docenten):
         namen = [
