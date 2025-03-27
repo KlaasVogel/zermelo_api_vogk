@@ -2,11 +2,12 @@
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
 
-# V1.1.16 (solving bug) - dev2
+# V1.1.16 (solving bug) - dev3
  - found bug: getting vakgroepen for lessons with always 2 groups is broken
  - logger: added more debug data for vaklessen
  - started dev releases for bug fixing
- - added more debugs in vaklessen
+ - added more debugs in logger in vaklessen
+ - removed filter for multiple groups -> filters now on more than 40 pupils
 
 
 # V1.1.14 (refactoring & bugfixes)
