@@ -1,14 +1,9 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-
-# V1.1.16 (solving bug) - dev3
+# V1.1.16 (bugfix)
  - found bug: getting vakgroepen for lessons with always 2 groups is broken
- - logger: added more debug data for vaklessen
- - started dev releases for bug fixing
- - added more debugs in logger in vaklessen
  - removed filter for multiple groups -> filters now on more than 40 pupils
-
 
 # V1.1.14 (refactoring & bugfixes)
  - moved zermelo API to single zermelo in _zermeloApi.py
