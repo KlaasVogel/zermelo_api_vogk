@@ -105,7 +105,7 @@ class VakLessen(ZermeloCollection[VakLes]):
         docenten = []
         grp_namen = []
         for les in self.filter():
-            if len(les.groups) > 1:
+            if len(les.students) > 40:
                 if not grp_namen and (not grp_bck or len(les.groups) < len(grp_bck)):
                     logger.debug("meerdere groepen")
                     grp_bck = les.choosableInDepartmentCodes
