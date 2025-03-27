@@ -119,6 +119,13 @@ class VakLessen(ZermeloCollection[VakLes]):
                 for grp in les.choosableInDepartmentCodes
                 if grp not in grp_namen
             ]
+        logger.debug(
+            f"filtering data for {self} \ngrp_namen: {grp_namen} \ndocenten: {docenten} \nleerlingen: {leerlingen}"
+        )
+        logger.debug(f"")
+        logger.debug(
+            f"backupdata: \n grp_bck: {grp_bck}\n doc_bck: {doc_bck} \nll_bck: {ll_bck}"
+        )
         if not grp_namen and grp_bck:
             logger.debug(f"result groepen: {grp_bck}")
             grp_namen = grp_bck
@@ -129,6 +136,7 @@ class VakLessen(ZermeloCollection[VakLes]):
             logger.debug(f"result leerlingen: {ll_bck}")
             leerlingen = ll_bck
         docenten = clean_docs(docenten)
+        logger.debug(f"after cleaning docs: {docenten}")
         leerlingen = [int(llnr) for llnr in leerlingen]
         return (leerlingen, docenten, grp_namen)
 
