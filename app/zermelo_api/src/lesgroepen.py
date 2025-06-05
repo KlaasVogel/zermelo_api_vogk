@@ -20,15 +20,18 @@ def createLesgroepNaam(vak: Vak, groep: Groep) -> str:
     else:
         return f"{jaarnaam}{vak.subjectCode}{groepnaam[-1]}"
 
+
 def get_info(
     llnrs: list[int],
     doc_codes: list[str],
     names: list[str],
-    ll: Leerlingen,
+    lln: Leerlingen,
     docs: Personeel,
 ) -> tuple[list[Leerling], list[Medewerker], list[str]]:
-    leerlingen = [ll.get(llnr) for llnr in llnrs]
+    leerlingen = [lln.get(llnr) for llnr in llnrs]
+    leerlingen = [ll for ll in leerlingen if ll is not None]
     docenten = [docs.get(code) for code in doc_codes]
+    docenten = [doc for doc in docenten if doc is not None]
     return (leerlingen, docenten, names)
 
 
@@ -119,53 +122,7 @@ async def find_lesgroepen(
     lesgroepen: list[Lesgroep] = []
     for groep, lesdata in datalist:
         if lesdata:
-            groepdata = get_info(*lesdata, lln, docs)
-            lesgroepen.append(Lesgroep(vak, groep, lj, *groepdata))
+            groepdata = get_info(*lesdata, lln=lln, docs=docs)
+            lesgroep = Lesgroep(vak, groep, lj, *groepdata)
+            lesgroepen.append(lesgroep)
     return (vak, lesgroepen)
-
-    # if not len(datalist):
-    #     datalist = await asyncio.gather(*[get_vakgroep_data(groepen.zermelo, vak, groep) for groep in groepen])
-
-
-# async def load_lesgroepen(leerjaar: Leerjaar, vak: Vak, groepen, ) -> Lesgroep:
-#     vakdata = await
-#     if vakdata:
-#         data =
-#         return
-
-#                 data = get_vak_data(
-
-#                 )
-#                  = data
-
-#             if not len(leerlingen) or not len(docenten):
-#                 logger.debug(f"geen deelnemers gevonden voor {groep}\n {vak}")
-#                 return False
-#         except Exception as e:
-#             logger.error(e)
-#             return False
-
-
-### uit lesgroepen:
-# groepinfo = await find_deelnemers(vak, groep)
-#                     if groepinfo:
-#                         data = get_info(*groepinfo, leerlingen, personeel)
-#                         self.append(Lesgroep(vak, groep, leerjaar, *data))
-#                         found = True
-#                 if found:
-#                     continue
-#                 logger.debug(f"trying maingroups for {vak.subjectName}")
-#                 for groep in groepen.get_department_groups(
-#                     vak.departmentOfBranch, True
-#                 ):
-#                     logger.debug(f"trying: {groep}")
-#                     groepinfo = find_deelnemers(vak, groep)
-#                     if groepinfo:
-#                         data = get_info(*groepinfo, leerlingen, personeel)
-#                         self.append(Lesgroep(vak, groep, leerjaar, *data))
-#                         found = True
-#                 if not found:
-#                     logger.warning(f"geen groepen gevonden voor {vak}")
-#         self.clean_leerlingen()
-#         logger.info(f"found {len(self)} lesgroepen")
-#         return self

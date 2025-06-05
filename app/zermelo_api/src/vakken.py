@@ -49,7 +49,7 @@ class Vakken(ZermeloCollection[Vak]):
         self.query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
         self.type = Vak
 
-    def get(self, vaknaam: str) -> Vak:
+    def get(self, vaknaam: str) -> Vak | None:
         for vak in self:
             if vak.subjectCode == vaknaam:
                 return vak

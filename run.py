@@ -11,10 +11,5 @@ async def main():
     print(branch)
     print(schoolyears)
     [logger.debug(vak) for vak in branch.vakken]
-# data = await branch.get_vak_doc_loks()
-# [logger.info(row) for row in data]
-# for branch in branches:
-#     if branch.branch == "lg":
-#         lesgroepen = await branch.find_lesgroepen()
 
 asyncio.run(main())

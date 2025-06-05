@@ -1,6 +1,11 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+# V1.2.0 (cleanup)
+ - removed: defining type to loading of Branches
+ - cleanup -> neater typing
+ - added Groep * Groepen to __init__.py 
+
 # V1.1.16 (bugfix)
  - found bug: getting vakgroepen for lessons with always 2 groups is broken
  - removed filter for multiple groups -> filters now on more than 40 pupils
