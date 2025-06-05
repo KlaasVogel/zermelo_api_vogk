@@ -23,12 +23,12 @@ class Branch:
     name: str
     schoolYear: int
     date: datetime = datetime.now()
-    leerlingen: Leerlingen = field(default_factory=list)
-    personeel: Personeel = field(default_factory=list)
-    leerjaren: Leerjaren = field(default_factory=list)
-    vakken: Vakken = field(default_factory=list)
-    groepen: Groepen = field(default_factory=list)
-    lokalen: Lokalen = field(default_factory=list)
+    leerlingen: Leerlingen = field(default_factory=Leerlingen)
+    personeel: Personeel = field(default_factory=Personeel)
+    leerjaren: Leerjaren = field(default_factory=Leerjaren)
+    vakken: Vakken = field(default_factory=Vakken)
+    groepen: Groepen = field(default_factory=Groepen)
+    lokalen: Lokalen = field(default_factory=Lokalen)
 
     def __post_init__(self):
         logger.info(f"*** loading branch: {self.name} ***")
@@ -41,7 +41,9 @@ class Branch:
 
     async def _init(self):
         attrs = ["leerlingen", "personeel", "leerjaren", "groepen", "vakken", "lokalen"]
-        await asyncio.gather(*[getattr(self, name)._init() for name in attrs])
+        await asyncio.gather(
+            *[getattr(self, name)._init() for name in attrs], return_exceptions=False
+        )
 
     async def find_lesgroepen(self) -> Lesgroepen | bool:
         if self.leerlingen and self.personeel:
@@ -62,10 +64,9 @@ class Branch:
 
 @dataclass
 class Branches(ZermeloCollection[Branch]):
-    type: InitVar
 
-    def __post_init__(self, type=None):
-        self.type = Branch if not type else type
+    def __post_init__(self):
+        self.type = Branch
         self.query = "branchesofschools/"
 
     async def _init(self, schoolyears: SchoolYears, datestring: str = ""):
@@ -84,7 +85,7 @@ class Branches(ZermeloCollection[Branch]):
     def __str__(self):
         return "Branches(" + ", ".join([br.name for br in self]) + ")"
 
-    def get(self, name: str) -> Branch:
+    def get(self, name: str) -> Branch | None:
         for branch in self:
             if (
                 name.lower() in branch.branch.lower()
@@ -95,22 +96,25 @@ class Branches(ZermeloCollection[Branch]):
             logger.error(f"NO Branch found for {name}")
 
 
-async def load_branches(schoolname: str, date: str = "", type=None) -> Branches:
+async def load_branches(schoolname: str, date: str = "") -> Branches | None:
     try:
-        _, branches = await load_schools(schoolname, date, type)
+        data = await load_schools(schoolname, date)
+        if not data:
+            raise Exception("No branches found")
+        _, branches = data
         return branches
     except Exception as e:
         logger.error(e)
 
 
 async def load_schools(
-    schoolname: str,
-    date: str = "",
-    type=None,
-) -> tuple[SchoolYears, Branches]:
+    schoolname: str, date: str = ""
+) -> tuple[SchoolYears, Branches] | None:
     try:
         schoolyears = await load_schoolyears(schoolname, date)
-        branches = Branches(type=type)
+        branches = Branches()
+        if not schoolyears:
+            return None
         await branches._init(schoolyears, date)
         return (schoolyears, branches)
     except Exception as e:

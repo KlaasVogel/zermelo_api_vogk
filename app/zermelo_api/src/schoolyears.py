@@ -31,7 +31,7 @@ class SchoolYears(ZermeloCollection[SchoolInSchoolYear]):
         return f"SchoolYears([{super().__repr__()}])"
 
 
-async def load_schoolyears(schoolname, date: str = "") -> SchoolYears:
+async def load_schoolyears(schoolname, date: str = "") -> SchoolYears | None:
     try:
         await loadAPI(schoolname)
         schoolyears = SchoolYears()

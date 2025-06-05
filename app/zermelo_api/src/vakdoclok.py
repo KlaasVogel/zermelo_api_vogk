@@ -46,11 +46,10 @@ class VakDocLoks(list[VakDocLok]):
             self.append(vakdoclok)
         return vakdoclok
 
-    def get(self, id: int) -> VakDocLok | bool:
+    def get(self, id: int) -> VakDocLok | None:
         for vakdoclok in self:
             if vakdoclok.id == id:
                 return vakdoclok
-        return False
 
 
 async def get_vakdocloks(id_branch: int, start: int, eind: int):

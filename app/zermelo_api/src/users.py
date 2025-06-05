@@ -32,6 +32,9 @@ class User:
     def __post_init__(self):
         self.fullName = self.generatename()
 
+    def __repr__(self):
+        return f"{self.fullName} ({self.code})"
+
     def generatename(self) -> str:
         if self.prefix:
             fullname = " ".join(
@@ -44,13 +47,6 @@ class User:
         else:
             fullname = "unknown"
         return fullname
-
-
-class Users(list[User]):
-    def print_list(self):
-        return (
-            f" = [" + ", ".join([str(user) for user in self]) + "]" if len(self) else ""
-        )
 
 
 @dataclass
@@ -85,7 +81,7 @@ class Leerling(User):
 
 
 @dataclass
-class Leerlingen(Users, ZermeloCollection[Leerling]):
+class Leerlingen(ZermeloCollection[Leerling]):
     schoolinschoolyear: InitVar[int] = 0
 
     def __post_init__(self, schoolinschoolyear: int):
@@ -111,7 +107,7 @@ class Leerlingen(Users, ZermeloCollection[Leerling]):
     def __str__(self):
         return f"Leerlingen({len(self)})"
 
-    def get(self, llnr) -> Leerling:
+    def get(self, llnr) -> Leerling | None:
         for user in self:
             if user.code == str(llnr):
                 return user
@@ -124,7 +120,7 @@ class Medewerker(User):
 
 
 @dataclass
-class Personeel(Users, ZermeloCollection[Medewerker]):
+class Personeel(ZermeloCollection[Medewerker]):
     schoolinschoolyear: InitVar[int] = 0
 
     def __post_init__(self, schoolinschoolyear: int):
@@ -137,7 +133,7 @@ class Personeel(Users, ZermeloCollection[Medewerker]):
     def __str__(self):
         return f"Personeel({len(self)})"
 
-    def get(self, code: str):
+    def get(self, code: str) -> Medewerker | None:
         for user in self:
             if user.code == code:
                 return user

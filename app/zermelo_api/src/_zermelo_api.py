@@ -26,9 +26,9 @@ class ZermeloAPI:
         except Exception as e:
             logger.exception(e)
 
-    def login(self, code: str) -> bool:
-        token = self.get_access_token(code)
-        return self.add_token(token)
+    async def login(self, code: str) -> bool:
+        token = await self.get_access_token(code)
+        return await self.add_token(token)
 
     async def get_access_token(self, code: str) -> str:
         token = ""
@@ -44,11 +44,11 @@ class ZermeloAPI:
                 token = data["access_token"]
         return token
 
-    def add_token(self, token: str) -> bool:
+    async def add_token(self, token: str) -> bool:
         if not token:
             return False
         self.credentials.settoken(token)
-        return self.checkCreds()
+        return await self.checkCreds()
 
     async def checkCreds(self):
         try:
@@ -64,7 +64,7 @@ class ZermeloAPI:
         if not self.credentials.token:
             raise Exception("No Token loaded!")
         status, data = await self.getData("users/~me", True)
-        if status != 200 or not len(data):
+        if status != 200 or type(data) is not list:
             raise Exception("could not load user data with token")
         logger.debug(f"get name: {data[0]}")
         row = data[0]
@@ -105,14 +105,14 @@ class ZermeloAPI:
     async def load_query(self, query: str) -> list[dict]:
         try:
             status, data = await self.getData(query)
-            if status != 200:
+            if status != 200 or type(data) is not list:
                 raise Exception(f"Error loading data {status}, {data}")
             if not data:
                 logger.debug("no data")
+            return data
         except Exception as e:
             logger.debug(e)
-            data = []
-        return data
+            return []
 
 
 zermelo = ZermeloAPI()

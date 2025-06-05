@@ -39,11 +39,11 @@ class getConfig:
                 continue
             return data
 
-    def get(self, key: str = None):
+    def get(self, key: str = ""):
         data = self.load()
         if not key:
             return data
-        return data[key] if key in data else {}
+        return data[key] if type(data) is dict and key in data else {}
 
 
 def getConfigDir():

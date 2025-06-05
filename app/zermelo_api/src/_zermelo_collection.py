@@ -29,6 +29,11 @@ class ZermeloCollection[T](list[T]):
     def __repr__(self):
         return ", ".join([f"{item!r}" for item in self])
 
+    def print_list(self):
+        return (
+            f" = [" + ", ".join([str(item) for item in self]) + "]" if len(self) else ""
+        )
+
     async def get_collection(self, query: str = "") -> list[dict]:
         query = self.get_query(query)
         logger.debug(f"type: {self.type}")

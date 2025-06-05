@@ -78,7 +78,9 @@ def clean_docs(docs: list[str]) -> list[str]:
     return checklist
 
 
-class LesData(tuple[list[int], list[str], list[str]]): ...
+class LesData(tuple[list[int], list[str], list[str]]):
+    def __new__(cls, *U):
+        return super(LesData, cls).__new__(cls, tuple(U))
 
 
 @dataclass
@@ -138,7 +140,7 @@ class VakLessen(ZermeloCollection[VakLes]):
         docenten = clean_docs(docenten)
         logger.debug(f"after cleaning docs: {docenten}")
         leerlingen = [int(llnr) for llnr in leerlingen]
-        return (leerlingen, docenten, grp_namen)
+        return LesData(leerlingen, docenten, grp_namen)
 
 
 def create_new_vaklessen(vak: Vak, groep: Groep) -> list[VakLessen]:
@@ -160,7 +162,7 @@ def create_new_vaklessen(vak: Vak, groep: Groep) -> list[VakLessen]:
     return result
 
 
-async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
+async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen | None:
     logger.debug(f"getting vakgroep lessen for {vak} and {groep}")
     try:
         result = create_new_vaklessen(vak, groep)
@@ -177,10 +179,9 @@ async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen:
         logger.debug("geen valid vaklessen gevonden.")
     except Exception as e:
         logger.error(e)
-    return []
 
 
-def check_data(data: LesData, vak: Vak) -> LesData | bool:
+def check_data(data: LesData, vak: Vak) -> LesData | None:
     logger.debug(f"checking data for: \n  data: {data}\n  vak: {vak}")
     leerlingen, docenten, groep_namen = data
     if len(leerlingen) and len(docenten):
@@ -189,22 +190,22 @@ def check_data(data: LesData, vak: Vak) -> LesData | bool:
             for groepnaam in groep_namen
             if vak.departmentOfBranchCode in groepnaam
         ]
-        return (leerlingen, docenten, namen)
-    return False
+        return LesData(leerlingen, docenten, namen)
+    return None
 
 
-async def get_vakgroep_data(vak, groep) -> LesData | bool:
+async def get_vakgroep_data(vak, groep) -> LesData | None:
     logger.debug(f"getting vakgroep data for: \n  vak: {vak}\n  groep: {groep}")
     vaklessen = await get_vakgroep_lessen(vak, groep)
-    if not len(vaklessen):
+    if not vaklessen:
         logger.debug("geen lessen")
-        return False
+        return None
     logger.debug(f"vaklessen: {vaklessen}")
     lesdata = vaklessen.get_data()
     return check_data(lesdata, vak)
 
 
-async def get_groep_data(vak: Vak, groep: Groep) -> tuple[Groep, LesData | bool]:
+async def get_groep_data(vak: Vak, groep: Groep) -> tuple[Groep, LesData | None]:
     logger.debug(f"getting data for: \n  vak: {vak}\n  groep: {groep}")
     data = await get_vakgroep_data(vak, groep)
     return (groep, data)
