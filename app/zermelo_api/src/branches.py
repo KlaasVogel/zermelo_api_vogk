@@ -45,7 +45,7 @@ class Branch:
             *[getattr(self, name)._init() for name in attrs], return_exceptions=False
         )
 
-    async def find_lesgroepen(self) -> Lesgroepen | bool:
+    async def find_lesgroepen(self) -> Lesgroepen | None:
         if self.leerlingen and self.personeel:
             return await Lesgroepen.create(
                 self.leerjaren,
@@ -54,7 +54,6 @@ class Branch:
                 self.leerlingen,
                 self.personeel,
             )
-        return False
 
     async def get_vak_doc_loks(self) -> VakDocLoks:
         start = int(self.date.timestamp())
