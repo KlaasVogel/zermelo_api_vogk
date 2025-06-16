@@ -1,7 +1,7 @@
 #!/bin/bash
 . "./venv/bin/activate"
 git pull
-# rm dist/*.dev*
 rm dist/*
 python setup.py bdist_wheel sdist
+rm dist/*.dev*
 twine upload --verbose dist/*
