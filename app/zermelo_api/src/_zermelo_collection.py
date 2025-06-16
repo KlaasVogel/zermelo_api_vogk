@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 from ._zermelo_api import zermelo
-from typing import TypeVar, List, Type, Self
+from typing import TypeVar, Type
 import inspect
-from inspect import _IntrospectableCallable
 import logging
 
 logger = logging.getLogger(__name__)
