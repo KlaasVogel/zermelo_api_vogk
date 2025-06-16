@@ -87,7 +87,6 @@ class Leerlingen(ZermeloCollection[Leerling]):
     def __post_init__(self, schoolinschoolyear: int):
         super().__post_init__()
         self.query = f"users?schoolInSchoolYear={schoolinschoolyear}&isStudent=true"
-        self.type = Leerling
 
     async def _init(self):
         data = await self.get_collection()

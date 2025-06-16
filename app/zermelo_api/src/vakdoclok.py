@@ -17,7 +17,7 @@ class DataVakDocLoks(ZermeloCollection[VakDocLokData]):
 
     def __post_init__(self, id_branch: int, start: int, eind: int):
         self.query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,teachers,choosableInDepartments,&start={start}&end={eind}"
-        self.type = VakDocLokData
+        # self.type = VakDocLokData
 
 
 @dataclass

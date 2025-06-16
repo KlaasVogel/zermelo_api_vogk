@@ -23,7 +23,7 @@ def from_zermelo_dict(cls, data: dict, *args, **kwargs):
 @dataclass
 class ZermeloCollection[T](list[T]):
     def __post_init__(self):
-        self.type = None
+        self.type = T
         self.query = ""
 
     def __repr__(self):

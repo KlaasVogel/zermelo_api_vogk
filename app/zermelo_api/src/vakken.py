@@ -47,7 +47,7 @@ class Vakken(ZermeloCollection[Vak]):
 
     def __post_init__(self, schoolinschoolyear: int):
         self.query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
-        self.type = Vak
+        # self.type = Vak
 
     def get(self, vaknaam: str) -> Vak | None:
         for vak in self:
