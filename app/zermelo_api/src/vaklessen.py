@@ -83,7 +83,6 @@ class LesData(tuple[list[int], list[str], list[str]]):
         return super(LesData, cls).__new__(cls, tuple(U))
 
 
-@dataclass
 class VakLessen(ZermeloCollection[VakLes]):
     id: InitVar[int] = 0
     code: InitVar[str] = ""
@@ -91,9 +90,12 @@ class VakLessen(ZermeloCollection[VakLes]):
     start: InitVar[int] = 0
     eind: InitVar[int] = 0
 
-    def __post_init__(self, id: int, code: str, start: int, eind: int):
-        self.query = f"appointments/?containsStudentsFromGroupInDepartment={id}&subjects={code}&type=lesson&start={start}&end={eind}&fields=appointmentInstance,id,teachers,students,subjects,groups,groupsInDepartments,choosableInDepartmentCodes,valid,cancelled"
-        # self.type = VakLes
+    def __init__(
+        self, id: int, code: str, groupName: str = "", start: int = 0, eind: int = 0
+    ):
+        query = f"appointments/?containsStudentsFromGroupInDepartment={id}&subjects={code}&type=lesson&start={start}&end={eind}&fields=appointmentInstance,id,teachers,students,subjects,groups,groupsInDepartments,choosableInDepartmentCodes,valid,cancelled"
+        super().__init__(VakLes, query)
+        self.groupName = groupName
 
     def filter(self) -> list[VakLes]:
         logger.debug(f"filtering {self}")

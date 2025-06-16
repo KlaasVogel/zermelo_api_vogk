@@ -61,12 +61,10 @@ class Branch:
         return await get_vakdocloks(self.id, start, eind)
 
 
-@dataclass
 class Branches(ZermeloCollection[Branch]):
 
-    def __post_init__(self):
-        # self.type = Branch
-        self.query = "branchesofschools/"
+    def __init__(self):
+        super().__init__(Branch, "branchesofschools/")
 
     async def _init(self, schoolyears: SchoolYears, datestring: str = ""):
         logger.debug("init branches")

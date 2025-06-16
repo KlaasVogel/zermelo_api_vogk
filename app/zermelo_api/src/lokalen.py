@@ -17,13 +17,11 @@ class Lokaal:
     schoolInSchoolYear: int
 
 
-@dataclass
 class Lokalen(ZermeloCollection[Lokaal]):
-    schoolinschoolyear: InitVar[int] = 0
 
-    def __post_init__(self, schoolinschoolyear: int):
-        self.query = f"locationofbranches?schoolInSchoolYear={schoolinschoolyear}"
-        # self.type = Lokaal
+    def __init__(self, schoolinschoolyear: int = 0):
+        query = f"locationofbranches?schoolInSchoolYear={schoolinschoolyear}"
+        super().__init__(Lokaal, query)
 
     def get(self, id: int) -> Lokaal | None:
         for lokaal in self:

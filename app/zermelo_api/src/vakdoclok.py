@@ -9,15 +9,11 @@ class VakDocLokData:
     choosableInDepartments: list[str]
 
 
-@dataclass
 class DataVakDocLoks(ZermeloCollection[VakDocLokData]):
-    branch_id: InitVar[int] = 0
-    start: InitVar[int] = 0
-    eind: InitVar[int] = 0
 
-    def __post_init__(self, id_branch: int, start: int, eind: int):
-        self.query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,teachers,choosableInDepartments,&start={start}&end={eind}"
-        # self.type = VakDocLokData
+    def __init__(self, id_branch: int, start: int, eind: int):
+        query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,teachers,choosableInDepartments,&start={start}&end={eind}"
+        super().__init__(VakDocLokData, query)
 
 
 @dataclass

@@ -37,10 +37,8 @@ class Leerjaar:
         self.name = getLeerjaarNaam(self.code.upper())
 
 
-@dataclass
 class Leerjaren(ZermeloCollection[Leerjaar]):
-    schoolinschoolyear: InitVar[int] = 0
 
-    def __post_init__(self, schoolinschoolyear: int):
-        self.query = f"departmentsofbranches?schoolInSchoolYear={schoolinschoolyear}"
-        # self.type = Leerjaar
+    def __init__(self, schoolinschoolyear: int = 0):
+        query = f"departmentsofbranches?schoolInSchoolYear={schoolinschoolyear}"
+        super().__init__(Leerjaar, query)

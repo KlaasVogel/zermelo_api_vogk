@@ -19,13 +19,13 @@ class SchoolInSchoolYear:
     schoolHrmsCode: str = field(repr=False)
 
 
-@dataclass
 class SchoolYears(ZermeloCollection[SchoolInSchoolYear]):
-    def __post_init__(self, datestring: str = ""):
+
+    def __init__(self, datestring: str = ""):
         year = get_year(datestring)
         logger.debug(year)
-        self.query = f"schoolsinschoolyears/?year={year}&archived=False"
-        # self.type = SchoolInSchoolYear
+        query = f"schoolsinschoolyears/?year={year}&archived=False"
+        super().__init__(SchoolInSchoolYear, query)
 
     def __repr__(self):
         return f"SchoolYears([{super().__repr__()}])"
