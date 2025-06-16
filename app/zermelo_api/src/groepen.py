@@ -19,13 +19,11 @@ class Groep:
 class deelnemers(tuple[list[int], list[str], list[str]]): ...
 
 
-@dataclass
 class Groepen(ZermeloCollection[Groep]):
-    schoolinschoolyear: InitVar[int] = 0
 
-    def __post_init__(self, schoolinschoolyear: int):
-        self.query = f"groupindepartments?schoolInSchoolYear={schoolinschoolyear}"
-        # self.type = Groep
+    def __init__(self, schoolinschoolyear: int = 0):
+        query = f"groupindepartments?schoolInSchoolYear={schoolinschoolyear}"
+        super().__init__(Groep, query)
 
     def get_department_groups(
         self, departmentOfBranch: int, maingroup: bool = False

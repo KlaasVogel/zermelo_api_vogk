@@ -80,13 +80,11 @@ class Leerling(User):
     leerjaren: LeerjaarCounters = field(default_factory=LeerjaarCounters)
 
 
-@dataclass
 class Leerlingen(ZermeloCollection[Leerling]):
-    schoolinschoolyear: InitVar[int] = 0
 
-    def __post_init__(self, schoolinschoolyear: int):
-        super().__post_init__()
-        self.query = f"users?schoolInSchoolYear={schoolinschoolyear}&isStudent=true"
+    def __init__(self, schoolinschoolyear: int = 0):
+        query = f"users?schoolInSchoolYear={schoolinschoolyear}&isStudent=true"
+        super().__init__(Leerling, query)
 
     async def _init(self):
         data = await self.get_collection()
@@ -118,13 +116,11 @@ class Medewerker(User):
         return self.fullName + f"({self.code})"
 
 
-@dataclass
 class Personeel(ZermeloCollection[Medewerker]):
-    schoolinschoolyear: InitVar[int] = 0
 
-    def __post_init__(self, schoolinschoolyear: int):
-        self.query = f"users?schoolInSchoolYear={schoolinschoolyear}&isEmployee=true"
-        self.type = Medewerker
+    def __init__(self, schoolinschoolyear: int = 0):
+        query = f"users?schoolInSchoolYear={schoolinschoolyear}&isEmployee=true"
+        super().__init__(Medewerker, query)
 
     def __repr__(self):
         return f"{self}{self.print_list()}"

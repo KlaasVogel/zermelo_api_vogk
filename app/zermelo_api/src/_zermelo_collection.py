@@ -1,30 +1,51 @@
 from dataclasses import dataclass
 from ._zermelo_api import zermelo
+from typing import TypeVar, List, Type, Self
 import inspect
+from inspect import _IntrospectableCallable
 import logging
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
 
-
-def from_zermelo_dict(cls, data: dict, *args, **kwargs):
-    [
-        logger.debug(f"{k} ({v}) not defined in {cls}")
-        for k, v in data.items()
-        if k not in inspect.signature(cls).parameters
-    ]
-    return cls(
-        *args,
-        **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
-        **kwargs,
-    )
+# Define a TypeVar for the specific type of object we want to create
+_T = TypeVar("_T")
 
 
-@dataclass
+def from_zermelo_dict(obj: Type[_T], data: dict, *args, **kwargs) -> _T:
+    """
+    Generates an object of type obj from a dictionary,
+    passing only keys that match obj's constructor parameters.
+
+    Args:
+        obj: The class (type) to instantiate.
+        data: The dictionary containing data for the object's constructor.
+        *args: Positional arguments to pass to the constructor.
+        **kwargs: Keyword arguments to pass to the constructor.
+
+    Returns:
+        An instance of type obj.
+    """
+
+    # Get the constructor parameters of the class
+    obj_signature = inspect.signature(obj).parameters
+    for k, v in data.items():
+        if k not in obj_signature:
+            logger.debug(f"{k} ({v}) not defined in {obj.__name__}")
+
+    # Filter data to include only keys that match constructor parameters
+    filtered_data = {k: v for k, v in data.items() if k in obj_signature}
+
+    # Instantiate the object
+    return obj(*args, **filtered_data, **kwargs)
+
+
 class ZermeloCollection[T](list[T]):
-    def __post_init__(self):
-        self.type = T
-        self.query = ""
+
+    def __init__(self, item_type: Type[T], query: str = ""):
+        super().__init__()
+        self.type = item_type
+        self.query = query
 
     def __repr__(self):
         return ", ".join([f"{item!r}" for item in self])

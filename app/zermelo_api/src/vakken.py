@@ -41,13 +41,11 @@ class Vak:
         return self.subjectName.strip()
 
 
-@dataclass
 class Vakken(ZermeloCollection[Vak]):
-    schoolinschoolyear: InitVar[int] = 0
 
-    def __post_init__(self, schoolinschoolyear: int):
-        self.query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
-        # self.type = Vak
+    def __init__(self, schoolinschoolyear: int = 0):
+        query = f"choosableindepartments?schoolInSchoolYear={schoolinschoolyear}"
+        super().__init__(Vak, query)
 
     def get(self, vaknaam: str) -> Vak | None:
         for vak in self:
