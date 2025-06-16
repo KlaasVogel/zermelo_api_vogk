@@ -67,13 +67,13 @@ def clean_docs(docs: list[str]) -> list[str]:
     clean_checklist(checklist)
     max = 0
     if len(checklist) > 1:
-        logger.warning(f"multiple docs: {checklist}")
+        logger.debug(f"multiple docs: {checklist}")
         for doc in checklist:
             doc_count = docs.count(doc)
             if doc_count > max:
                 result = doc
                 max = doc_count
-        logger.warning(f"result: {result} ({max})")
+        logger.debug(f"result: {result} ({max})")
         return [result]
     return checklist
 
@@ -93,7 +93,7 @@ class VakLessen(ZermeloCollection[VakLes]):
 
     def __post_init__(self, id: int, code: str, start: int, eind: int):
         self.query = f"appointments/?containsStudentsFromGroupInDepartment={id}&subjects={code}&type=lesson&start={start}&end={eind}&fields=appointmentInstance,id,teachers,students,subjects,groups,groupsInDepartments,choosableInDepartmentCodes,valid,cancelled"
-        self.type = VakLes
+        # self.type = VakLes
 
     def filter(self) -> list[VakLes]:
         logger.debug(f"filtering {self}")

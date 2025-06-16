@@ -25,7 +25,7 @@ class Groepen(ZermeloCollection[Groep]):
 
     def __post_init__(self, schoolinschoolyear: int):
         self.query = f"groupindepartments?schoolInSchoolYear={schoolinschoolyear}"
-        self.type = Groep
+        # self.type = Groep
 
     def get_department_groups(
         self, departmentOfBranch: int, maingroup: bool = False

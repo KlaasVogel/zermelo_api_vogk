@@ -43,4 +43,4 @@ class Leerjaren(ZermeloCollection[Leerjaar]):
 
     def __post_init__(self, schoolinschoolyear: int):
         self.query = f"departmentsofbranches?schoolInSchoolYear={schoolinschoolyear}"
-        self.type = Leerjaar
+        # self.type = Leerjaar

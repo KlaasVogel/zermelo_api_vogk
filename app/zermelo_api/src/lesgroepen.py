@@ -97,7 +97,7 @@ class Lesgroepen(list[Lesgroep]):
             for vak, lesgroepen in results:
                 self.extend(lesgroepen)
                 if not len(lesgroepen):
-                    logger.warning(f"geen groepen gevonden voor {vak}")
+                    logger.debug(f"geen groepen gevonden voor {vak}")
         self.clean_leerlingen()
         return self
 
@@ -105,7 +105,7 @@ class Lesgroepen(list[Lesgroep]):
         for lesgroep in self:
             for leerling in lesgroep.leerlingen.copy():
                 if leerling.leerjaren.get_id() != lesgroep.leerjaar.id:
-                    logger.warning(
+                    logger.debug(
                         f"removing leerling ({leerling.fullName}) from {lesgroep.naam}"
                     )
                     lesgroep.leerlingen.remove(leerling)

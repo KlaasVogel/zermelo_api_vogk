@@ -25,7 +25,7 @@ class SchoolYears(ZermeloCollection[SchoolInSchoolYear]):
         year = get_year(datestring)
         logger.debug(year)
         self.query = f"schoolsinschoolyears/?year={year}&archived=False"
-        self.type = SchoolInSchoolYear
+        # self.type = SchoolInSchoolYear
 
     def __repr__(self):
         return f"SchoolYears([{super().__repr__()}])"

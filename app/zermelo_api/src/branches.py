@@ -65,7 +65,7 @@ class Branch:
 class Branches(ZermeloCollection[Branch]):
 
     def __post_init__(self):
-        self.type = Branch
+        # self.type = Branch
         self.query = "branchesofschools/"
 
     async def _init(self, schoolyears: SchoolYears, datestring: str = ""):

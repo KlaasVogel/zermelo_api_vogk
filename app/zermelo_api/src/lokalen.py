@@ -23,7 +23,7 @@ class Lokalen(ZermeloCollection[Lokaal]):
 
     def __post_init__(self, schoolinschoolyear: int):
         self.query = f"locationofbranches?schoolInSchoolYear={schoolinschoolyear}"
-        self.type = Lokaal
+        # self.type = Lokaal
 
     def get(self, id: int) -> Lokaal | None:
         for lokaal in self:
