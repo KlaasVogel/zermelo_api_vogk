@@ -7,7 +7,7 @@ from .groepen import Groepen
 from .lesgroepen import Lesgroepen
 from .vakken import Vakken
 from .lokalen import Lokalen
-from .vakdoclok import get_vakdocloks, VakDocLoks
+from .vakdoclok import get_vakloks, VakLoks
 from dataclasses import dataclass, field, InitVar
 import asyncio
 import logging
@@ -55,10 +55,10 @@ class Branch:
                 self.personeel,
             )
 
-    async def get_vak_doc_loks(self) -> VakDocLoks:
+    async def get_vak_doc_loks(self) -> VakLoks:
         start = int(self.date.timestamp())
         eind = start + 28 * 24 * 3600
-        return await get_vakdocloks(self.id, start, eind)
+        return await get_vakloks(self.id, start, eind)
 
 
 class Branches(ZermeloCollection[Branch]):

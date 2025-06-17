@@ -13,4 +13,4 @@ from .src.appointments import (
 )
 from .src.vakken import Vakken, Vak
 from .src.lokalen import Lokalen, Lokaal
-from .src.vakdoclok import VakDocLoks, VakDocLok, get_vakdocloks
+from .src.vakdoclok import VakLoks, VakLok, get_vakloks

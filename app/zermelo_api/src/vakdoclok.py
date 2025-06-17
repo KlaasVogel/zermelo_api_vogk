@@ -3,29 +3,21 @@ from dataclasses import dataclass, InitVar, field
 
 
 @dataclass
-class VakDocLokData:
-    teachers: list[str]
-    locationsOfBranch: list[int]  # lokalen
+class VakLokData:
+    locationsOfBranch: list[int]
     choosableInDepartments: list[str]
 
 
-class DataVakDocLoks(ZermeloCollection[VakDocLokData]):
-
+class DataVakLoks(ZermeloCollection[VakLokData]):
     def __init__(self, id_branch: int, start: int, eind: int):
-        query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,teachers,choosableInDepartments,&start={start}&end={eind}"
-        super().__init__(VakDocLokData, query)
+        query = f"appointments?branchOfSchool={id_branch}&fields=locationsOfBranch,choosableInDepartments,&start={start}&end={eind}"
+        super().__init__(VakLokData, query)
 
 
 @dataclass
-class VakDocLok:
+class VakLok:
     id: int
-    docenten: list[str] = field(default_factory=list)
     lokalen: list[int] = field(default_factory=list)
-
-    def add_docs(self, docenten: list[str]):
-        for doc in docenten:
-            if doc not in self.docenten:
-                self.docenten.append(doc)
 
     def add_loks(self, lokalen: list[int]):
         for lok in lokalen:
@@ -34,27 +26,26 @@ class VakDocLok:
 
 
 @dataclass
-class VakDocLoks(list[VakDocLok]):
-    def add(self, id) -> VakDocLok:
+class VakLoks(list[VakLok]):
+    def add(self, id) -> VakLok:
         vakdoclok = self.get(id)
         if not vakdoclok:
-            vakdoclok = VakDocLok(id)
+            vakdoclok = VakLok(id)
             self.append(vakdoclok)
         return vakdoclok
 
-    def get(self, id: int) -> VakDocLok | None:
+    def get(self, id: int) -> VakLok | None:
         for vakdoclok in self:
             if vakdoclok.id == id:
                 return vakdoclok
 
 
-async def get_vakdocloks(id_branch: int, start: int, eind: int):
-    vakdata = DataVakDocLoks(id_branch, start, eind)
+async def get_vakloks(id_branch: int, start: int, eind: int):
+    vakdata = DataVakLoks(id_branch, start, eind)
     await vakdata._init()
-    vakdocloks = VakDocLoks()
+    vakdocloks = VakLoks()
     for data in vakdata:
         for id in data.choosableInDepartments:
             vakdoclok = vakdocloks.add(id)
-            vakdoclok.add_docs(data.teachers)
             vakdoclok.add_loks(data.locationsOfBranch)
     return vakdocloks
