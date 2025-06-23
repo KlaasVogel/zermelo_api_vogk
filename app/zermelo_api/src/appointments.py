@@ -71,11 +71,14 @@ class Appointment:
 async def get_appointments(query: str) -> list[Appointment]:
     try:
         status, data = await zermelo.getData(query)
+        if isinstance(data, Exception):
+            logger.error(f"status: {status}")
+            raise Exception(data)
         if status != 200:
             logger.error(f"error: {status}")
             raise Exception(data)
-        if type(data) != list[dict]:
-            raise Exception(data)
+        if not isinstance(data, list):
+            raise Exception(f"{type(data)} is not a list")
         return [from_zermelo_dict(Appointment, row) for row in data]
     except Exception as e:
         logger.exception(e)
