@@ -34,8 +34,8 @@ class SchoolYears(ZermeloCollection[SchoolInSchoolYear]):
 async def load_schoolyears(schoolname, date: str = "") -> SchoolYears | None:
     try:
         await loadAPI(schoolname)
-        schoolyears = SchoolYears()
-        await schoolyears._init(date)
+        schoolyears = SchoolYears(date)
+        await schoolyears._init()
         return schoolyears
     except Exception as e:
         logger.error(e)

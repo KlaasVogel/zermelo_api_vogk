@@ -1,8 +1,9 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V1.2.5.dev1
+# V1.2.5.dev2
   bugfix loading school from date -> adding debuglogging to Branches
+  found bug ... testing reseult
 
 # V1.2.4 (major refactoring of ZermeloCollection)
  - added Groep * Groepen to __init__.py
