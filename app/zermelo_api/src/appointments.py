@@ -4,6 +4,7 @@ from dataclasses import dataclass, InitVar, field
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 @dataclass
 class Appointment:
