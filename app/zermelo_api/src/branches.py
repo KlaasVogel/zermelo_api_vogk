@@ -13,7 +13,7 @@ import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 @dataclass
 class Branch:
@@ -69,6 +69,7 @@ class Branches(ZermeloCollection[Branch]):
     async def _init(self, schoolyears: SchoolYears, datestring: str = ""):
         logger.debug("init branches")
         date = get_date(datestring)
+        logger.debug(f"date: {date}")
         await asyncio.gather(
             *[self.load_from_schoolyear(sy, date) for sy in schoolyears]
         )
@@ -108,7 +109,9 @@ async def load_schools(
     schoolname: str, date: str = ""
 ) -> tuple[SchoolYears, Branches] | None:
     try:
+        logger.debug("loading schools:")
         schoolyears = await load_schoolyears(schoolname, date)
+        logger.debug(schoolyears)
         branches = Branches()
         if not schoolyears:
             return None
