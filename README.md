@@ -1,13 +1,9 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V1.2.5.dev5
-  found bug in fetching appointments?
-  - setting debug mode for roosters
-  - fixed error?
-
-# V1.2.5.dev2
+# V1.2.5
   bugfix loading school from date
+  bugfix fetching appointments
 
 # V1.2.4 (major refactoring of ZermeloCollection)
  - added Groep * Groepen to __init__.py
