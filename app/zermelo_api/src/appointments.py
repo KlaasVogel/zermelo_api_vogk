@@ -72,8 +72,9 @@ async def get_appointments(query: str) -> list[Appointment]:
     try:
         status, data = await zermelo.getData(query)
         if status != 200:
+            logger.error(f"error: {status}")
             raise Exception(data)
-        if type(data) is not list[dict]:
+        if type(data) != list[dict]:
             raise Exception(data)
         return [from_zermelo_dict(Appointment, row) for row in data]
     except Exception as e:
