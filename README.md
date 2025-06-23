@@ -1,7 +1,7 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
-# V1.2.5.dev4
+# V1.2.5.dev5
   found bug in fetching appointments?
   - setting debug mode for roosters
   - fixed error?
