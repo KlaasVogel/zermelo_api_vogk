@@ -1,6 +1,16 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+to load API import loadAPI:
+zermelo api = await loadAPI(SCHOOLNAME)
+
+to save credentials:
+use zermelo_api.login(CODE)
+
+
+# V1.2.6.dev1 (changing code of login)
+  - changed code in _io_json
+
 # V1.2.5
   bugfix loading school from date
   bugfix fetching appointments
