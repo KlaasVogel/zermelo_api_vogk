@@ -5,6 +5,7 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
 
 
 class ZermeloAPI:
@@ -27,22 +28,19 @@ class ZermeloAPI:
             logger.exception(e)
 
     async def login(self, code: str) -> bool:
+
         token = await self.get_access_token(code)
         return await self.add_token(token)
 
     async def get_access_token(self, code: str) -> str:
         token = ""
-        url = self.zerurl + "oauth/token"
+        if not code:
+            raise Exception("No Code Provided")
+        code = "".join(code.split())
+        logger.debug(f"new code {code}")
+        url = self.zerurl + f"oauth/token"
         data = {"grant_type": "authorization_code", "code": code}
-        response = await post_request(url, data)
-        logger.debug(response)
-        exit()
-
-        if zerrequest.status_code == 200:
-            data = json.loads(zerrequest.text)
-            if "access_token" in data:
-                token = data["access_token"]
-        return token
+        return await post_request(url, data)
 
     async def add_token(self, token: str) -> bool:
         if not token:

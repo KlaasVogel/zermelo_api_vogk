@@ -8,16 +8,13 @@ logger = logging.getLogger(__name__)
 async def get_json(url: str):
     async with aiohttp.ClientSession() as client:
         async with client.get(url) as response:
-            # logger.debug(response)
-            # assert response.status == 200
             return await response.read()
 
 
-async def post_request(url: str, data: dict):
+async def post_request(url: str, data: dict) -> str:
     async with aiohttp.ClientSession() as session:
-        response = await session.post(
-            url="https://httpbin.org/post",
-            data={"key": "value"},
-            headers={"Content-Type": "application/json"},
-        )
-        return await response.json()
+        response = await session.post(url=url, data=data)
+        result = await response.json()
+        if "access_token" in result:
+            return result["access_token"]
+        return ""
