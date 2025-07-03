@@ -140,11 +140,15 @@ class ZermeloAPI:
 zermelo = ZermeloAPI()
 
 
-async def loadAPI(schoolname: str = "") -> ZermeloAPI | None:
+async def loadAPI(schoolname: str = "") -> ZermeloAPI:
     try:
         if schoolname:
             zermelo.update_schoolname(schoolname)
-        if await zermelo.checkCreds():
-            return zermelo
+        if not await zermelo.checkCreds():
+            logger.warning(
+                "credentials not set up properly. Please import and run: installAPI()"
+            )
     except Exception as e:
         logger.exception(e)
+    finally:
+        return zermelo
