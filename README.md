@@ -1,24 +1,24 @@
 ## zermelo_api_vogk
 A small module to create a Zermelo accesstoken and put some data from Zermelo in dataclasses
 
+to setup credentials import and run installAPI(schoolname, code)
+
 to load API import loadAPI:
-zermelo api = await loadAPI(SCHOOLNAME)
-
-to save credentials:
-use zermelo_api.login(CODE)
+zermelo api = await loadAPI()
 
 
 
-# V1.2.7.dev1 (changing code of login)
-  - changed code in _io_json (V1.2.6)
-  - updated loading of api.
-  - adding setup
+# V1.3.0.dev2 (changing code of login)
+  - updated loading of api
+  - adding install 
+  - moved config to working dir
 
-# V1.2.5 (major refactoring of ZermeloCollection)
+# V1.2.6 (major refactoring of ZermeloCollection)
  - added Groep * Groepen to __init__.py
  - logging: warnings changed to debug
  - major change in ZermeloCollection using TypeVar
  - removed VakDocs
+ - changed code in _io_json
 
 # V1.1.16 (bugfix)
  - found bug: getting vakgroepen for lessons with always 2 groups is broken

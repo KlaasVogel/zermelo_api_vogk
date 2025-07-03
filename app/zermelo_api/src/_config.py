@@ -1,4 +1,4 @@
-from os import path, mkdir
+import os
 from shutil import copyfile
 import json
 
@@ -10,8 +10,8 @@ class getConfig:
         backupname = file + ".bak"
         if not HOMEDIR:
             raise Exception("Kan configuratie directory niet aanmaken")
-        self.filepath = path.join(HOMEDIR, filename)
-        self.backup = path.join(HOMEDIR, backupname)
+        self.filepath = os.path.join(HOMEDIR, filename)
+        self.backup = os.path.join(HOMEDIR, backupname)
 
     def __repr__(self):
         return f'ConfigFile(path="{self.filepath}")'
@@ -32,7 +32,7 @@ class getConfig:
         data = {}
         for file in [self.filepath, self.backup]:
             try:
-                if path.isfile(file):
+                if os.path.isfile(file):
                     with open(file, "r") as json_file:
                         data = json.load(json_file)
             except Exception:
@@ -47,6 +47,11 @@ class getConfig:
 
 
 def getConfigDir():
-    abspath = path.abspath(__file__)
-    dname = path.dirname(abspath)
-    return dname
+    basepath = os.getcwd()
+    configpath = os.path.join(basepath, ".config_zermelo_api")
+    if not os.path.isdir(configpath):
+        os.mkdir(configpath)
+    return configpath
+    # abspath = path.abspath(__file__)
+    # dname = path.dirname(abspath)
+    # return dname
