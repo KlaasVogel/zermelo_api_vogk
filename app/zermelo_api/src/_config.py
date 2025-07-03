@@ -1,6 +1,10 @@
 import os
 from shutil import copyfile
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class getConfig:
@@ -17,6 +21,7 @@ class getConfig:
         return f'ConfigFile(path="{self.filepath}")'
 
     def save(self, data: dict) -> bool:
+        logger.debug(f"saving data: {data}")
         try:
             copyfile(self.filepath, self.backup)
         except Exception:
@@ -52,6 +57,3 @@ def getConfigDir():
     if not os.path.isdir(configpath):
         os.mkdir(configpath)
     return configpath
-    # abspath = path.abspath(__file__)
-    # dname = path.dirname(abspath)
-    # return dname
