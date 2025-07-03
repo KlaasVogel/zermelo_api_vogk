@@ -1,4 +1,4 @@
-from zermelo_api import loadAPI
+from ._zermelo_api import loadAPI
 import asyncio
 import logging
 
@@ -16,10 +16,8 @@ async def main(schoolname: str, code: str):
         logger.exception(e)
 
 
-if __name__ == "__main__":
+def installAPI(schoolname: str = "", code: str = ""):
     print("updating credentials")
-    schoolname = ""
-    code = ""
     while not schoolname:
         schoolname = input("name of school:")
 
@@ -27,3 +25,7 @@ if __name__ == "__main__":
         code = input("code: ")
 
     asyncio.run(main(schoolname, code))
+
+
+if __name__ == "__main__":
+    installAPI()

@@ -10,21 +10,19 @@ logger = logging.getLogger(__name__)
 
 class NoSchoolNameException(Exception):
     def __init__(self, message: str = ""):
-        error = f"no schoolname provided: {message}\n Please run install.py to setup credentials"
+        error = f"no schoolname provided: {message}\n Please import and run installAPI to setup credentials"
         super().__init__(error)
 
 
 class NoTokenException(Exception):
     def __init__(self, message: str = ""):
-        error = (
-            f"no token provided: {message}\n Please run install.py to setup credentials"
-        )
+        error = f"no token provided: {message}\n Please Please import and run installAPI to setup credentials"
         super().__init__(error)
 
 
 class WrongCredentialsException(Exception):
     def __init__(self, message: str = ""):
-        error = f"wrong token provided: {message}\n Please run install.py to update credentials"
+        error = f"wrong token provided: {message}\n Please Please import and run installAPI to setup credentials"
         super().__init__(error)
 
 
