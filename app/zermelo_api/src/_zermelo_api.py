@@ -29,11 +29,14 @@ class WrongCredentialsException(Exception):
 class ZermeloAPI:
     def __init__(self):
         self.credentials = Credentials()
-        if not self.credentials.schoolname:
-            raise NoSchoolNameException("init API")
-        self.set_schoolname(self.credentials.schoolname)
-        if not self.credentials.token:
-            raise NoTokenException("init API")
+        try:
+            if not self.credentials.schoolname:
+                raise NoSchoolNameException("init API")
+            self.set_schoolname(self.credentials.schoolname)
+            if not self.credentials.token:
+                raise NoTokenException("init API")
+        except Exception as e:
+            logger.exception(e)
 
     def set_schoolname(self, schoolname: str):
         self.zerurl = f"https://{schoolname}.zportal.nl/api/v3/"
