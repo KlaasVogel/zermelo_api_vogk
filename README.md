@@ -8,14 +8,13 @@ to save credentials:
 use zermelo_api.login(CODE)
 
 
-# V1.2.6.dev1 (changing code of login)
-  - changed code in _io_json
 
-# V1.2.5
-  bugfix loading school from date
-  bugfix fetching appointments
+# V1.2.7.dev1 (changing code of login)
+  - changed code in _io_json (V1.2.6)
+  - updated loading of api.
+  - adding setup
 
-# V1.2.4 (major refactoring of ZermeloCollection)
+# V1.2.5 (major refactoring of ZermeloCollection)
  - added Groep * Groepen to __init__.py
  - logging: warnings changed to debug
  - major change in ZermeloCollection using TypeVar

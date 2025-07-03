@@ -16,7 +16,7 @@ class getConfig:
     def __repr__(self):
         return f'ConfigFile(path="{self.filepath}")'
 
-    def save(self, data):
+    def save(self, data: dict) -> bool:
         try:
             copyfile(self.filepath, self.backup)
         except Exception:
@@ -28,7 +28,7 @@ class getConfig:
             return False
         return True
 
-    def load(self):
+    def load(self) -> dict:
         data = {}
         for file in [self.filepath, self.backup]:
             try:

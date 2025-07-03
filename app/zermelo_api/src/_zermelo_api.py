@@ -8,32 +8,53 @@ logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
 
 
-class ZermeloAPI:
+class NoSchoolNameException(Exception):
+    def __init__(self, message: str = ""):
+        error = f"no schoolname provided: {message}\n Please run install.py to setup credentials"
+        super().__init__(error)
 
+
+class NoTokenException(Exception):
+    def __init__(self, message: str = ""):
+        error = (
+            f"no token provided: {message}\n Please run install.py to setup credentials"
+        )
+        super().__init__(error)
+
+
+class WrongCredentialsException(Exception):
+    def __init__(self, message: str = ""):
+        error = f"wrong token provided: {message}\n Please run install.py to update credentials"
+        super().__init__(error)
+
+
+class ZermeloAPI:
     def __init__(self):
         self.credentials = Credentials()
-        self.loaded = False
+        if not self.credentials.schoolname:
+            raise NoSchoolNameException("init API")
+        self.set_schoolname(self.credentials.schoolname)
+        if not self.credentials.token:
+            raise NoTokenException("init API")
 
-    async def _init(self, school: str):
-        if self.loaded:
+    def set_schoolname(self, schoolname: str):
+        self.zerurl = f"https://{schoolname}.zportal.nl/api/v3/"
+
+    def update_schoolname(self, schoolname: str):
+        if not schoolname:
+            raise Exception("No schoolname provided")
+        if schoolname == self.credentials.schoolname:
+            logger.debug("schoolname is already stored")
             return
-        self.zerurl = f"https://{school}.zportal.nl/api/v3/"
-        try:
-            if not await self.checkCreds():
-                with open("creds.ini") as f:
-                    token = f.read()
-                    await self.add_token(token)
-            self.loaded = True
-        except Exception as e:
-            logger.exception(e)
+        self.credentials.setschoolname(schoolname)
+        self.set_schoolname(schoolname)
+        self.credentials.settoken("")
 
     async def login(self, code: str) -> bool:
-
         token = await self.get_access_token(code)
         return await self.add_token(token)
 
     async def get_access_token(self, code: str) -> str:
-        token = ""
         if not code:
             raise Exception("No Code Provided")
         code = "".join(code.split())
@@ -59,11 +80,13 @@ class ZermeloAPI:
             return result
 
     async def getName(self):
+        if not self.credentials.schoolname:
+            raise NoSchoolNameException("getName")
         if not self.credentials.token:
-            raise Exception("No Token loaded!")
+            raise NoTokenException("using getName")
         status, data = await self.getData("users/~me", True)
         if status != 200 or type(data) is not list:
-            raise Exception("could not load user data with token")
+            raise WrongCredentialsException("getName")
         logger.debug(f"get name: {data[0]}")
         row = data[0]
         if not row["prefix"]:
@@ -116,6 +139,11 @@ class ZermeloAPI:
 zermelo = ZermeloAPI()
 
 
-async def loadAPI(name: str) -> ZermeloAPI:
-    await zermelo._init(name)
-    return zermelo
+async def loadAPI(schoolname: str = "") -> ZermeloAPI | None:
+    try:
+        if schoolname:
+            zermelo.update_schoolname(schoolname)
+        if await zermelo.checkCreds():
+            return zermelo
+    except Exception as e:
+        logger.exception(e)
