@@ -4,6 +4,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+talen = ["Engels", "Duits", "Frans", "Grieks", "Latijn", "Nederlands"]
+
+
+def lowercase_first_char(string: str) -> str:
+    if not string:
+        return ""
+    string = string.strip()
+    for taal in talen:
+        if taal in string:
+            return string
+    return string[:1].lower() + string[1:]
+
 
 @dataclass
 class Vak:
@@ -37,8 +49,8 @@ class Vak:
             nameparts.pop(-1)
             name = " ".join(nameparts)
             logger.debug(f"new name: {name}")
-            return name.strip()
-        return self.subjectName.strip()
+            return lowercase_first_char(name)
+        return lowercase_first_char(self.subjectName)
 
 
 class Vakken(ZermeloCollection[Vak]):
