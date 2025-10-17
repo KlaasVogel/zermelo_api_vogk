@@ -6,9 +6,10 @@ to setup credentials import and run installAPI(schoolname, code)
 to load API import loadAPI:
 zermelo api = await loadAPI()
 
+# V1.3.2 (bugfix)
+ - remove uppercase form some vaknamen
 
-
-# V1.3.0.dev2 (changing code of login)
+# V1.3.1 (changing code of login)
   - updated loading of api
   - adding install 
   - moved config to working dir
