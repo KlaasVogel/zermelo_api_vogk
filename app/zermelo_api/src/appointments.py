@@ -57,7 +57,7 @@ class Appointment:
     udmUUID: str = ""
     creator: str = ""
     subjects: list[str] = field(default_factory=list)
-    teachers: list[int] = field(default_factory=list)
+    teachers: list[str] = field(default_factory=list)
     onlineTeachers: list[str] = field(default_factory=list)
     students: list[str] = field(default_factory=list)
 
