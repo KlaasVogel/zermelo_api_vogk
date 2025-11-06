@@ -7,7 +7,8 @@ to load API import loadAPI:
 zermelo api = await loadAPI()
 
 # V1.3.2 (bugfix)
- - remove uppercase form some vaknamen
+ - remove uppercase form some vaknamen (V1.3.2)
+ - changed type of teachers in appointments to string (V1.3.3)
 
 # V1.3.1 (changing code of login)
   - updated loading of api
