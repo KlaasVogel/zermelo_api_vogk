@@ -3,6 +3,7 @@ from .vakken import Vak
 from .groepen import Groep
 from ._time_utils import get_date, delta_week
 from dataclasses import dataclass, InitVar, field
+from datetime import datetime
 import asyncio
 import logging
 
@@ -152,9 +153,12 @@ class VakLessen(ZermeloCollection[VakLes]):
 
 
 def create_new_vaklessen(
-    vak: Vak, groep: Groep, offsets: list[int] = FAST_WEEK_OFFSETS
+    vak: Vak,
+    groep: Groep,
+    offsets: list[int] = FAST_WEEK_OFFSETS,
+    date: datetime | None = None,
 ) -> list[VakLessen]:
-    date = get_date()
+    date = date or get_date()
     result: list[VakLessen] = []
     for x in offsets:
         dweek = x * 4
@@ -173,11 +177,14 @@ def create_new_vaklessen(
 
 
 async def get_vakgroep_lessen(
-    vak: Vak, groep: Groep, offsets: list[int] = FAST_WEEK_OFFSETS
+    vak: Vak,
+    groep: Groep,
+    offsets: list[int] = FAST_WEEK_OFFSETS,
+    date: datetime | None = None,
 ) -> VakLessen | None:
     logger.debug(f"getting vakgroep lessen for {vak} and {groep}")
     try:
-        result = create_new_vaklessen(vak, groep, offsets)
+        result = create_new_vaklessen(vak, groep, offsets, date)
         for vaklessen in result:
             logger.debug(f"init: {vaklessen}")
             await vaklessen._init()
@@ -207,10 +214,13 @@ def check_data(data: LesData, vak: Vak) -> LesData | None:
 
 
 async def get_vakgroep_data(
-    vak, groep, offsets: list[int] = FAST_WEEK_OFFSETS
+    vak,
+    groep,
+    offsets: list[int] = FAST_WEEK_OFFSETS,
+    date: datetime | None = None,
 ) -> LesData | None:
     logger.debug(f"getting vakgroep data for: \n  vak: {vak}\n  groep: {groep}")
-    vaklessen = await get_vakgroep_lessen(vak, groep, offsets)
+    vaklessen = await get_vakgroep_lessen(vak, groep, offsets, date)
     if not vaklessen:
         logger.debug("geen lessen")
         return None
@@ -220,8 +230,11 @@ async def get_vakgroep_data(
 
 
 async def get_groep_data(
-    vak: Vak, groep: Groep, offsets: list[int] = FAST_WEEK_OFFSETS
+    vak: Vak,
+    groep: Groep,
+    offsets: list[int] = FAST_WEEK_OFFSETS,
+    date: datetime | None = None,
 ) -> tuple[Groep, LesData | None]:
     logger.debug(f"getting data for: \n  vak: {vak}\n  groep: {groep}")
-    data = await get_vakgroep_data(vak, groep, offsets)
+    data = await get_vakgroep_data(vak, groep, offsets, date)
     return (groep, data)
