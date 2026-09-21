@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field, InitVar
 from .vakken import Vakken, Vak
-from .vaklessen import get_groep_data, LesData
+from .vaklessen import get_groep_data, LesData, FAST_WEEK_OFFSETS, DEEP_WEEK_OFFSETS
 from .groepen import Groepen, Groep
 from .users import Leerlingen, Leerling, Personeel, Medewerker
 from .leerjaren import Leerjaren, Leerjaar
 from ._zermelo_collection import from_zermelo_dict
+from datetime import datetime
 import asyncio
 import logging
 
@@ -61,7 +62,23 @@ class Lesgroepen(list[Lesgroep]):
         groepen: Groepen,
         leerlingen: Leerlingen,
         personeel: Personeel,
-    ):
+        date: datetime | None = None,
+    ) -> "Lesgroepen":
+        return await cls._create(
+            leerjaren, vakken, groepen, leerlingen, personeel, FAST_WEEK_OFFSETS, date
+        )
+
+    @classmethod
+    async def _create(
+        cls,
+        leerjaren: Leerjaren,
+        vakken: Vakken,
+        groepen: Groepen,
+        leerlingen: Leerlingen,
+        personeel: Personeel,
+        offsets: list[int],
+        date: datetime | None = None,
+    ) -> "Lesgroepen":
         self = cls()
         for leerjaar in leerjaren:
             tasks1 = []
@@ -72,7 +89,7 @@ class Lesgroepen(list[Lesgroep]):
                 tasks1.append(
                     asyncio.create_task(
                         find_lesgroepen(
-                            leerjaar, vak, vakgroepen, leerlingen, personeel
+                            leerjaar, vak, vakgroepen, leerlingen, personeel, offsets, date
                         )
                     )
                 )
@@ -86,7 +103,7 @@ class Lesgroepen(list[Lesgroep]):
                     tasks2.append(
                         asyncio.create_task(
                             find_lesgroepen(
-                                leerjaar, vak, maingroepen, leerlingen, personeel
+                                leerjaar, vak, maingroepen, leerlingen, personeel, offsets, date
                             )
                         )
                     )
@@ -117,8 +134,12 @@ async def find_lesgroepen(
     grpn: list[Groep],
     lln: Leerlingen,
     docs: Personeel,
+    offsets: list[int] = FAST_WEEK_OFFSETS,
+    date: datetime | None = None,
 ) -> tuple[Vak, list[Lesgroep]]:
-    datalist = await asyncio.gather(*[get_groep_data(vak, groep) for groep in grpn])
+    datalist = await asyncio.gather(
+        *[get_groep_data(vak, groep, offsets, date) for groep in grpn]
+    )
     lesgroepen: list[Lesgroep] = []
     for groep, lesdata in datalist:
         if lesdata:
@@ -126,3 +147,24 @@ async def find_lesgroepen(
             lesgroep = Lesgroep(vak, groep, lj, *groepdata)
             lesgroepen.append(lesgroep)
     return (vak, lesgroepen)
+
+
+async def find_lesgroepen_deep(
+    leerjaren: Leerjaren,
+    vakken: Vakken,
+    groepen: Groepen,
+    leerlingen: Leerlingen,
+    personeel: Personeel,
+    date: datetime | None = None,
+) -> Lesgroepen:
+    """Standalone, opt-in deep search.
+
+    Re-checks every (vak, groep) pair across the full multi-window range (up
+    to 7 four-week windows spanning roughly -12..+16 weeks) instead of just
+    the current window. Not called from Lesgroepen.create() or
+    Branch.find_lesgroepen() - call this explicitly when the fast path's
+    single-window result needs to be cross-checked or backfilled.
+    """
+    return await Lesgroepen._create(
+        leerjaren, vakken, groepen, leerlingen, personeel, DEEP_WEEK_OFFSETS, date
+    )

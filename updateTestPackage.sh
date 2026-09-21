@@ -1,6 +1,5 @@
 #!/bin/bash
-. "./venv/bin/activate"
 git pull
-rm dist/*
-python setup.py bdist_wheel sdist
+rm -f dist/*
+pyproject-build --sdist --wheel
 twine upload --repository testpypi --verbose dist/*dev*
