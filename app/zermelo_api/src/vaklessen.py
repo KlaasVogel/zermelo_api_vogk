@@ -10,6 +10,12 @@ logger = logging.getLogger(__name__)
 
 skip_docs: list[str] = ["stth", "lgverv", "lgst"]
 
+# week offsets (relative to "now", in 4-week steps) used to search for lessons
+# in create_new_vaklessen(). FAST checks only the current window; DEEP retries
+# across the full range (~-12..+16 weeks) when the current window has none.
+FAST_WEEK_OFFSETS: list[int] = [0]
+DEEP_WEEK_OFFSETS: list[int] = [0, -1, 1, -2, 2, 3, -3]
+
 
 def check_doc_skip(doc: str) -> bool:
     for skip_doc in skip_docs:
@@ -145,10 +151,12 @@ class VakLessen(ZermeloCollection[VakLes]):
         return LesData(leerlingen, docenten, grp_namen)
 
 
-def create_new_vaklessen(vak: Vak, groep: Groep) -> list[VakLessen]:
+def create_new_vaklessen(
+    vak: Vak, groep: Groep, offsets: list[int] = FAST_WEEK_OFFSETS
+) -> list[VakLessen]:
     date = get_date()
     result: list[VakLessen] = []
-    for x in [0, -1, 1, -2, 2, 3, -3]:
+    for x in offsets:
         dweek = x * 4
         starttijd = int(delta_week(date, dweek).timestamp())
         eindtijd = int(delta_week(date, dweek + 4).timestamp())
@@ -164,10 +172,12 @@ def create_new_vaklessen(vak: Vak, groep: Groep) -> list[VakLessen]:
     return result
 
 
-async def get_vakgroep_lessen(vak: Vak, groep: Groep) -> VakLessen | None:
+async def get_vakgroep_lessen(
+    vak: Vak, groep: Groep, offsets: list[int] = FAST_WEEK_OFFSETS
+) -> VakLessen | None:
     logger.debug(f"getting vakgroep lessen for {vak} and {groep}")
     try:
-        result = create_new_vaklessen(vak, groep)
+        result = create_new_vaklessen(vak, groep, offsets)
         for vaklessen in result:
             logger.debug(f"init: {vaklessen}")
             await vaklessen._init()
@@ -196,9 +206,11 @@ def check_data(data: LesData, vak: Vak) -> LesData | None:
     return None
 
 
-async def get_vakgroep_data(vak, groep) -> LesData | None:
+async def get_vakgroep_data(
+    vak, groep, offsets: list[int] = FAST_WEEK_OFFSETS
+) -> LesData | None:
     logger.debug(f"getting vakgroep data for: \n  vak: {vak}\n  groep: {groep}")
-    vaklessen = await get_vakgroep_lessen(vak, groep)
+    vaklessen = await get_vakgroep_lessen(vak, groep, offsets)
     if not vaklessen:
         logger.debug("geen lessen")
         return None
@@ -207,7 +219,9 @@ async def get_vakgroep_data(vak, groep) -> LesData | None:
     return check_data(lesdata, vak)
 
 
-async def get_groep_data(vak: Vak, groep: Groep) -> tuple[Groep, LesData | None]:
+async def get_groep_data(
+    vak: Vak, groep: Groep, offsets: list[int] = FAST_WEEK_OFFSETS
+) -> tuple[Groep, LesData | None]:
     logger.debug(f"getting data for: \n  vak: {vak}\n  groep: {groep}")
-    data = await get_vakgroep_data(vak, groep)
+    data = await get_vakgroep_data(vak, groep, offsets)
     return (groep, data)
