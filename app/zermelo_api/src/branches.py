@@ -4,7 +4,7 @@ from .schoolyears import SchoolYears, SchoolInSchoolYear, load_schoolyears
 from .users import Leerlingen, Personeel
 from .leerjaren import Leerjaren
 from .groepen import Groepen
-from .lesgroepen import Lesgroepen
+from .lesgroepen import Lesgroepen, find_lesgroepen_deep
 from .vakken import Vakken
 from .lokalen import Lokalen
 from .vakdoclok import get_vakloks, VakLoks
@@ -53,6 +53,20 @@ class Branch:
                 self.groepen,
                 self.leerlingen,
                 self.personeel,
+                self.date,
+            )
+
+    async def find_lesgroepen_deep(self) -> Lesgroepen | None:
+        """Opt-in: full multi-window lesson search. See find_lesgroepen_deep()
+        in lesgroepen.py for details. Not called automatically anywhere."""
+        if self.leerlingen and self.personeel:
+            return await find_lesgroepen_deep(
+                self.leerjaren,
+                self.vakken,
+                self.groepen,
+                self.leerlingen,
+                self.personeel,
+                self.date,
             )
 
     async def get_vak_doc_loks(self) -> VakLoks:
