@@ -53,6 +53,7 @@ class Branch:
                 self.groepen,
                 self.leerlingen,
                 self.personeel,
+                self.date,
             )
 
     async def find_lesgroepen_deep(self) -> Lesgroepen | None:
@@ -65,6 +66,7 @@ class Branch:
                 self.groepen,
                 self.leerlingen,
                 self.personeel,
+                self.date,
             )
 
     async def get_vak_doc_loks(self) -> VakLoks:
