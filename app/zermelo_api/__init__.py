@@ -15,3 +15,4 @@ from .src.appointments import (
 from .src.vakken import Vakken, Vak
 from .src.lokalen import Lokalen, Lokaal
 from .src.vakdoclok import VakLoks, VakLok, get_vakloks
+from .src.stamklassen import find_stamklassen, resolve_stamklassen, StamklasLes, STAMKLAS_SUBJECTS

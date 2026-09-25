@@ -6,6 +6,13 @@ to setup credentials import and run installAPI(schoolname, code)
 to load API import loadAPI:
 zermelo api = await loadAPI()
 
+# V1.5.0 (stamklassen)
+ - added find_stamklassen() / Branch.find_stamklassen(): leerlingnummer -> stamklas (main group),
+   derived from language lessons (ne/netl, fallback entl) because users.mainGroup and
+   studentsindepartments need read rights most API tokens don't have.
+   Classes sharing their language lessons (e.g. A + G) are told apart by a single-class
+   lesson in another subject (e.g. Greek). One appointments query per main group.
+
 # V1.3.2 (bugfix)
  - remove uppercase form some vaknamen (V1.3.2)
  - changed type of teachers in appointments to string (V1.3.3)

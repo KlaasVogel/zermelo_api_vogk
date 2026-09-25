@@ -5,6 +5,7 @@ from .users import Leerlingen, Personeel
 from .leerjaren import Leerjaren
 from .groepen import Groepen
 from .lesgroepen import Lesgroepen, find_lesgroepen_deep
+from .stamklassen import find_stamklassen
 from .vakken import Vakken
 from .lokalen import Lokalen
 from .vakdoclok import get_vakloks, VakLoks
@@ -68,6 +69,11 @@ class Branch:
                 self.personeel,
                 self.date,
             )
+
+    async def find_stamklassen(self, weeks: int = 2) -> dict[int, str]:
+        """leerlingnummer -> stamklas, derived from language lessons. See find_stamklassen()
+        in stamklassen.py for details. Needs self.groepen loaded (done by _init())."""
+        return await find_stamklassen(self.groepen, self.date, weeks)
 
     async def get_vak_doc_loks(self) -> VakLoks:
         start = int(self.date.timestamp())
